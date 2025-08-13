@@ -16,11 +16,9 @@
             font-family: 'Noto Sans KR', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            /* Add a semi-transparent overlay to the body itself */
             background-color: rgba(0, 0, 0, 0.4);
             background-blend-mode: overlay;
         }
-        /* Create a pseudo-element to hold the blurred background image */
         body::before {
             content: '';
             position: fixed;
@@ -32,9 +30,7 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            /* Apply a blur filter */
             filter: blur(4px);
-            /* Place it behind all other content */
             z-index: -1;
         }
         .font-digital {
@@ -45,31 +41,53 @@
         }
     </style>
 </head>
-<!-- The body tag no longer needs the inline style -->
 <body class="flex items-center justify-center min-h-screen p-4">
 
-    <!-- Container without background to give a "cut-out" feel -->
     <div id="app-container" class="w-full max-w-md mx-auto p-6 sm:p-8 text-center transition-all duration-300">
 
         <!-- Start Screen -->
         <div id="start-screen">
             <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-2">수강신청 연습</h1>
-            <p class="text-white text-shadow mb-8">실전 전에 속도를 테스트하세요!</p>
-            <button id="start-button" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-transform transform hover:scale-105">
-                연습 시작
-            </button>
+            <p class="text-white text-shadow mb-8">모드를 선택하세요!</p>
+            <div class="space-y-4">
+                <button id="mode-10-button" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-transform transform hover:scale-105">
+                    10개 모드
+                </button>
+                <button id="mode-infinite-button" class="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-teal-700 focus:outline-none focus:ring-4 focus:ring-teal-300 transition-transform transform hover:scale-105">
+                    무한 모드
+                </button>
+            </div>
         </div>
 
         <!-- Practice Screen (initially hidden) -->
-        <div id="practice-screen" class="hidden">
-            <!-- Number Display -->
-            <div id="number-display" class="font-digital text-6xl sm:text-8xl font-black text-white text-shadow my-8 h-24 flex items-center justify-center" aria-live="polite"></div>
-
-            <!-- Input Field -->
+        <div id="practice-screen" class="hidden relative">
+            <!-- Home button for infinite mode -->
+            <button id="infinite-home-button" class="hidden absolute top-0 left-0 text-white bg-slate-600/50 hover:bg-slate-700/70 rounded-full p-2 m-2 focus:outline-none focus:ring-2 focus:ring-white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            </button>
+            <div id="wrong-attempts-display" class="absolute top-0 right-0 text-red-500 font-bold text-lg text-shadow m-2 p-2"></div>
+            <div id="round-counter" class="text-white text-shadow font-bold text-lg mb-4 h-6"></div>
+            <div id="number-display" class="font-digital text-6xl sm:text-8xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center" aria-live="polite"></div>
             <input type="tel" id="input-field" class="w-full text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md focus:ring-4 focus:ring-indigo-300 focus:border-indigo-500 outline-none transition disabled:bg-slate-200" placeholder="####" maxlength="4" disabled>
-
-            <!-- Feedback Message -->
             <div id="feedback-display" class="mt-4 h-6 text-xl font-bold text-shadow transition-opacity duration-300"></div>
+        </div>
+
+        <!-- Results Screen (initially hidden) -->
+        <div id="results-screen" class="hidden">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">게임 결과</h1>
+            <div class="text-white text-shadow text-2xl space-y-2 mb-8 bg-black/20 p-4 rounded-lg">
+                <p>맞힌 개수: <span id="correct-count" class="font-bold text-green-400">0</span>개</p>
+                <p>틀린 개수: <span id="incorrect-count" class="font-bold text-red-400">0</span>개</p>
+                <p>평균 속도: <span id="average-speed" class="font-bold text-amber-400">0.00</span>초</p>
+            </div>
+            <div class="space-y-4">
+                <button id="retry-button" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
+                    다시하기
+                </button>
+                <button id="home-button" class="w-full bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700 focus:outline-none focus:ring-4 focus:ring-slate-300">
+                    처음으로 돌아가기
+                </button>
+            </div>
         </div>
 
     </div>
@@ -78,17 +96,43 @@
         // --- DOM Element References ---
         const startScreen = document.getElementById('start-screen');
         const practiceScreen = document.getElementById('practice-screen');
-        const startButton = document.getElementById('start-button');
+        const resultsScreen = document.getElementById('results-screen');
+
+        const mode10Button = document.getElementById('mode-10-button');
+        const modeInfiniteButton = document.getElementById('mode-infinite-button');
+        
+        const roundCounter = document.getElementById('round-counter');
         const numberDisplay = document.getElementById('number-display');
         const inputField = document.getElementById('input-field');
         const feedbackDisplay = document.getElementById('feedback-display');
+        const wrongAttemptsDisplay = document.getElementById('wrong-attempts-display');
+        const infiniteHomeButton = document.getElementById('infinite-home-button');
+
+        const correctCountDisplay = document.getElementById('correct-count');
+        const incorrectCountDisplay = document.getElementById('incorrect-count');
+        const averageSpeedDisplay = document.getElementById('average-speed');
+        const retryButton = document.getElementById('retry-button');
+        const homeButton = document.getElementById('home-button');
 
         // --- State Variables ---
+        let gameMode = null; // '10rounds' or 'infinite'
         let currentNumber = '';
         let isFirstRound = true;
+        
+        let roundLimit = 10;
+        let currentRound = 0;
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        let timerStart = 0;
+        let timeRecords = [];
 
         // --- Event Listeners ---
-        startButton.addEventListener('click', showPracticeScreen);
+        mode10Button.addEventListener('click', () => startGame('10rounds'));
+        modeInfiniteButton.addEventListener('click', () => startGame('infinite'));
+        retryButton.addEventListener('click', () => startGame(gameMode));
+        homeButton.addEventListener('click', goToHome);
+        infiniteHomeButton.addEventListener('click', goToHome);
+
         inputField.addEventListener('keydown', (event) => {
             if (!/[0-9]/.test(event.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'].includes(event.key)) {
                 event.preventDefault();
@@ -99,17 +143,46 @@
         });
 
         // --- Functions ---
-        function showPracticeScreen() {
+        function startGame(mode) {
+            gameMode = mode;
+            isFirstRound = true;
+            currentRound = 0;
+            correctAnswers = 0;
+            wrongAnswers = 0;
+            timeRecords = [];
+
             startScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
             practiceScreen.classList.remove('hidden');
+            
+            // Show/hide the home button based on mode
+            if (mode === 'infinite') {
+                infiniteHomeButton.classList.remove('hidden');
+            } else {
+                infiniteHomeButton.classList.add('hidden');
+            }
+
+            wrongAttemptsDisplay.textContent = `틀린 횟수: 0`;
             startNewRound();
         }
 
         function startNewRound() {
+            if (gameMode === '10rounds' && currentRound >= roundLimit) {
+                showResults();
+                return;
+            }
+            
+            currentRound++;
+            if (gameMode === '10rounds') {
+                roundCounter.textContent = `${currentRound} / ${roundLimit}`;
+            } else {
+                roundCounter.textContent = `라운드 ${currentRound}`;
+            }
+
             inputField.disabled = true;
             inputField.value = '';
             feedbackDisplay.textContent = '';
-            feedbackDisplay.className = 'mt-4 h-6 text-xl font-bold text-shadow'; // Reset class
+            feedbackDisplay.className = 'mt-4 h-6 text-xl font-bold text-shadow';
 
             const countdownDuration = isFirstRound ? 3 : 1;
             countdown(countdownDuration);
@@ -119,15 +192,16 @@
         function countdown(seconds) {
             if (seconds > 0) {
                 numberDisplay.textContent = seconds;
-                numberDisplay.style.color = 'white'; // Countdown number color
+                numberDisplay.style.color = 'white';
                 setTimeout(() => countdown(seconds - 1), 1000);
             } else {
                 currentNumber = generateRandomNumber();
                 numberDisplay.textContent = currentNumber;
-                numberDisplay.style.color = '#FBBF24'; // Highlight the target number (amber color)
+                numberDisplay.style.color = '#FBBF24';
                 
                 inputField.disabled = false;
                 inputField.focus();
+                timerStart = Date.now(); // Start timer when number appears
             }
         }
 
@@ -144,16 +218,43 @@
             const userInput = inputField.value;
 
             if (userInput === currentNumber) {
-                feedbackDisplay.textContent = '정답!';
-                feedbackDisplay.style.color = '#10B981'; // Green color for correct
+                const timeTaken = (Date.now() - timerStart) / 1000;
+                timeRecords.push(timeTaken);
+                correctAnswers++;
+                feedbackDisplay.textContent = `정답! (${timeTaken.toFixed(2)}초)`;
+                feedbackDisplay.style.color = '#10B981';
                 setTimeout(startNewRound, 500);
             } else {
+                wrongAnswers++;
+                wrongAttemptsDisplay.textContent = `틀린 횟수: ${wrongAnswers}`;
                 feedbackDisplay.textContent = '다시';
-                feedbackDisplay.style.color = '#EF4444'; // Red color for incorrect
+                feedbackDisplay.style.color = '#EF4444';
                 inputField.value = '';
                 inputField.classList.add('animate-bounce');
-                setTimeout(() => inputField.classList.remove('animate-bounce'), 500);
+                setTimeout(() => {
+                    inputField.classList.remove('animate-bounce');
+                }, 500);
             }
+        }
+
+        function showResults() {
+            practiceScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+            correctCountDisplay.textContent = correctAnswers;
+            incorrectCountDisplay.textContent = wrongAnswers;
+
+            let avgSpeed = 0;
+            if (timeRecords.length > 0) {
+                const totalTime = timeRecords.reduce((sum, time) => sum + time, 0);
+                avgSpeed = (totalTime / timeRecords.length).toFixed(2);
+            }
+            averageSpeedDisplay.textContent = avgSpeed;
+        }
+
+        function goToHome() {
+            resultsScreen.classList.add('hidden');
+            practiceScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
         }
     </script>
 </body>
