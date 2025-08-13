@@ -69,8 +69,8 @@
             <div id="number-display" class="font-digital text-6xl sm:text-8xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center" aria-live="polite"></div>
             <!-- Input and Submit Button Wrapper -->
             <div class="flex items-stretch justify-center space-x-2">
-                <!-- MODIFIED: Removed inputmode and pattern to allow QWERTY keyboard -->
-                <input type="text" id="input-field" class="flex-grow w-2/3 text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md focus:ring-4 focus:ring-indigo-300 focus:border-indigo-500 outline-none transition disabled:bg-slate-200" placeholder="####" maxlength="4" disabled>
+                <!-- MODIFIED: Added inputmode="text" for explicit QWERTY keyboard -->
+                <input type="text" inputmode="text" id="input-field" class="flex-grow w-2/3 text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md focus:ring-4 focus:ring-indigo-300 focus:border-indigo-500 outline-none transition disabled:bg-slate-200" placeholder="####" maxlength="4" disabled>
                 <button id="submit-button" class="w-1/3 bg-green-600 text-white font-bold rounded-lg shadow-lg hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-300 transition disabled:bg-slate-400 disabled:cursor-not-allowed" disabled>확인</button>
             </div>
             <div id="feedback-display" class="mt-4 h-6 text-xl font-bold text-shadow transition-opacity duration-300"></div>
@@ -138,11 +138,13 @@
         infiniteHomeButton.addEventListener('click', goToHome);
         submitButton.addEventListener('click', checkAnswer);
 
+        // MODIFIED: Added 'input' event listener to filter non-numeric characters in real-time.
+        inputField.addEventListener('input', (event) => {
+            // Replace any non-digit characters with an empty string
+            event.target.value = event.target.value.replace(/[^0-9]/g, '');
+        });
+
         inputField.addEventListener('keydown', (event) => {
-            // MODIFIED: Added back logic to only allow numbers, even with a QWERTY keyboard.
-            if (!/[0-9]/.test(event.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'].includes(event.key)) {
-                event.preventDefault();
-            }
             if (event.key === 'Enter' && !inputField.disabled) {
                 checkAnswer();
             }
