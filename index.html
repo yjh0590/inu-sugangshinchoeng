@@ -57,7 +57,8 @@
             <div id="round-counter" class="text-white text-shadow font-bold text-lg mb-4 h-6"></div>
             <div id="number-display" class="font-digital text-6xl sm:text-8xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center"></div>
             <div class="flex items-stretch justify-center space-x-2">
-                <input type="text" inputmode="text" id="input-field" class="flex-grow w-2/3 text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md" placeholder="####" maxlength="4" disabled>
+                <!-- MODIFIED: Changed type to "tel" for a number-focused QWERTY keyboard -->
+                <input type="tel" id="input-field" class="flex-grow w-2/3 text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md" placeholder="####" maxlength="4" disabled>
                 <button id="submit-button" class="w-1/3 bg-green-600 text-white font-bold rounded-lg shadow-lg" disabled>확인</button>
             </div>
             <div id="feedback-display" class="mt-4 h-6 text-xl font-bold text-shadow"></div>
@@ -68,7 +69,6 @@
             <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">기록 등록</h1>
             <p class="text-white text-shadow mb-4">랭킹에 표시될 학과를 선택하세요.</p>
             
-            <!-- ADDED: Search Input for Departments -->
             <div class="relative mb-2">
                 <input type="text" id="department-search" class="w-full text-lg p-3 pl-10 border-2 border-slate-300 rounded-lg shadow-md bg-white" placeholder="학과 검색...">
                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -226,7 +226,7 @@
                 let groupVisible = false;
                 options.forEach(option => {
                     const optionText = option.textContent.toLowerCase();
-                    if (optionText.includes(searchTerm)) {
+                    if (option.value === "" || optionText.includes(searchTerm)) { // Always show the placeholder
                         option.style.display = '';
                         groupVisible = true;
                     } else {
