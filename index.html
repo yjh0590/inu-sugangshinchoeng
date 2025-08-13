@@ -237,7 +237,6 @@
             });
         });
 
-        // MODIFIED: Added event listener to prevent pasting into the input field.
         inputField.addEventListener('paste', (e) => {
             e.preventDefault();
         });
@@ -245,7 +244,52 @@
         // --- Supabase Functions ---
         async function recordAndDisplayVisit() { /* ... (same as before) ... */ }
         async function submitScoreAndShowLeaderboard() { /* ... (same as before) ... */ }
-        async function fetchAndShowLeaderboard() { /* ... (same as before) ... */ }
+        async function fetchAndShowLeaderboard() {
+            departmentScreen.classList.add('hidden');
+            startScreen.classList.add('hidden');
+            leaderboardScreen.classList.remove('hidden');
+            leaderboardList.innerHTML = `<div class="text-white text-center">랭킹을 불러오는 중...</div>`;
+
+            const { data, error } = await supabaseClient
+                .from('leaderboard')
+                .select('department, avg_speed, created_at')
+                .order('avg_speed', { ascending: true })
+                .limit(8);
+
+            if (error) {
+                console.error('Error fetching leaderboard:', error);
+                leaderboardList.innerHTML = `<div class="text-red-400 text-center">랭킹을 불러오는 데 실패했습니다.</div>`;
+                return;
+            }
+
+            leaderboardList.innerHTML = '';
+            data.forEach((record, index) => {
+                const rank = index + 1;
+                const medal = ['🥇', '🥈', '🥉'][index] || `<span class="text-sm">${rank}위</span>`;
+                
+                const date = new Date(record.created_at);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}`;
+
+                const li = document.createElement('li');
+                li.className = 'flex items-center justify-between bg-black/30 p-3 rounded-lg text-white text-shadow';
+                li.innerHTML = `
+                    <div class="flex items-center">
+                        <span class="font-bold text-xl w-12 text-left">${medal}</span>
+                        <div>
+                            <span class="font-semibold">${record.department}</span>
+                            <span class="block text-xs text-gray-300">${formattedDate}</span>
+                        </div>
+                    </div>
+                    <span class="font-digital font-bold text-amber-400">${record.avg_speed.toFixed(4)}초</span>
+                `;
+                leaderboardList.appendChild(li);
+            });
+        }
 
         // --- Game Logic ---
         function showResults() {
@@ -259,7 +303,7 @@
             }
             lastGameResult = { avgSpeed: avgSpeed };
             departmentSelect.value = '';
-            departmentSearch.value = ''; // Clear search field
+            departmentSearch.value = '';
             departmentSearch.dispatchEvent(new Event('input')); 
             departmentSelect.focus();
         }
@@ -311,52 +355,7 @@
             }
             fetchAndShowLeaderboard();
         }
-        async function fetchAndShowLeaderboard() {
-            departmentScreen.classList.add('hidden');
-            startScreen.classList.add('hidden');
-            leaderboardScreen.classList.remove('hidden');
-            leaderboardList.innerHTML = `<div class="text-white text-center">랭킹을 불러오는 중...</div>`;
-
-            const { data, error } = await supabaseClient
-                .from('leaderboard')
-                .select('department, avg_speed, created_at')
-                .order('avg_speed', { ascending: true })
-                .limit(8);
-
-            if (error) {
-                console.error('Error fetching leaderboard:', error);
-                leaderboardList.innerHTML = `<div class="text-red-400 text-center">랭킹을 불러오는 데 실패했습니다.</div>`;
-                return;
-            }
-
-            leaderboardList.innerHTML = '';
-            data.forEach((record, index) => {
-                const rank = index + 1;
-                const medal = ['🥇', '🥈', '🥉'][index] || `<span class="text-sm">${rank}위</span>`;
-                
-                const date = new Date(record.created_at);
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-                const hours = String(date.getHours()).padStart(2, '0');
-                const minutes = String(date.getMinutes()).padStart(2, '0');
-                const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}`;
-
-                const li = document.createElement('li');
-                li.className = 'flex items-center justify-between bg-black/30 p-3 rounded-lg text-white text-shadow';
-                li.innerHTML = `
-                    <div class="flex items-center">
-                        <span class="font-bold text-xl w-12 text-left">${medal}</span>
-                        <div>
-                            <span class="font-semibold">${record.department}</span>
-                            <span class="block text-xs text-gray-300">${formattedDate}</span>
-                        </div>
-                    </div>
-                    <span class="font-digital font-bold text-amber-400">${record.avg_speed.toFixed(2)}초</span>
-                `;
-                leaderboardList.appendChild(li);
-            });
-        }
+        
         function startGame(mode) {
             gameMode = mode; isFirstRound = true; currentRound = 0;
             correctAnswers = 0; wrongAnswers = 0; timeRecords = [];
@@ -399,7 +398,7 @@
             if (userInput === currentNumber) {
                 const timeTaken = (Date.now() - timerStart) / 1000;
                 timeRecords.push(timeTaken); correctAnswers++;
-                feedbackDisplay.textContent = `정답! (${timeTaken.toFixed(2)}초)`;
+                feedbackDisplay.textContent = `정답! (${timeTaken.toFixed(4)}초)`;
                 feedbackDisplay.style.color = '#10B981';
                 inputField.disabled = true; submitButton.disabled = true;
                 setTimeout(startNewRound, 500);
