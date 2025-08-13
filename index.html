@@ -196,7 +196,7 @@
         const visitorCountDisplay = document.getElementById('visitor-count');
         const viewRankingButton = document.getElementById('view-ranking-button');
         const departmentSelect = document.getElementById('department-select');
-        const departmentSearch = document.getElementById('department-search'); // ADDED
+        const departmentSearch = document.getElementById('department-search');
         const submitScoreButton = document.getElementById('submit-score-button');
         const leaderboardList = document.getElementById('leaderboard-list');
         const leaderboardHomeButton = document.getElementById('leaderboard-home-button');
@@ -217,7 +217,6 @@
         let lastGameResult = {};
 
         // --- Event Listeners ---
-        // ADDED: Event listener for the search input
         departmentSearch.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
             const optgroups = departmentSelect.querySelectorAll('optgroup');
@@ -234,9 +233,13 @@
                         option.style.display = 'none';
                     }
                 });
-                // Hide optgroup label if no options are visible
                 optgroup.style.display = groupVisible ? '' : 'none';
             });
+        });
+
+        // MODIFIED: Added event listener to prevent pasting into the input field.
+        inputField.addEventListener('paste', (e) => {
+            e.preventDefault();
         });
 
         // --- Supabase Functions ---
@@ -257,7 +260,6 @@
             lastGameResult = { avgSpeed: avgSpeed };
             departmentSelect.value = '';
             departmentSearch.value = ''; // Clear search field
-            // Reset visibility of all options
             departmentSearch.dispatchEvent(new Event('input')); 
             departmentSelect.focus();
         }
