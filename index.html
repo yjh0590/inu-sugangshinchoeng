@@ -4,41 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>수강신청 매크로 방지 연습</title>
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Noto Sans KR for general text, Roboto Mono for numbers -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
-        /* Custom font styles */
         body {
             font-family: 'Noto Sans KR', sans-serif;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
             background-color: rgba(0, 0, 0, 0.4);
             background-blend-mode: overlay;
         }
         body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('./images.jpeg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            filter: blur(4px);
-            z-index: -1;
+            background-size: cover; background-position: center;
+            filter: blur(4px); z-index: -1;
         }
-        .font-digital {
-            font-family: 'Roboto Mono', monospace;
-        }
-        .text-shadow {
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
+        .font-digital { font-family: 'Roboto Mono', monospace; }
+        .text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -50,61 +38,65 @@
             <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-2">수강신청 연습</h1>
             <p class="text-white text-shadow mb-8">모드를 선택하세요!</p>
             <div class="space-y-4">
-                <button id="mode-10-button" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-transform transform hover:scale-105">
-                    10개 모드
-                </button>
-                <button id="mode-infinite-button" class="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-teal-700 focus:outline-none focus:ring-4 focus:ring-teal-300 transition-transform transform hover:scale-105">
-                    무한 모드
-                </button>
+                <button id="mode-10-button" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-indigo-700">10개 모드</button>
+                <button id="mode-infinite-button" class="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-teal-700">무한 모드</button>
+                <button id="view-ranking-button" class="w-full bg-amber-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-amber-700">랭킹 보기</button>
             </div>
+            <div class="mt-8 text-white text-shadow">오늘의 방문자: <span id="visitor-count" class="font-bold">...</span>명</div>
         </div>
 
-        <!-- Practice Screen (initially hidden) -->
+        <!-- Practice Screen (hidden) -->
         <div id="practice-screen" class="hidden relative">
-            <button id="infinite-home-button" class="hidden absolute top-0 left-0 text-white bg-slate-600/50 hover:bg-slate-700/70 rounded-full p-2 m-2 focus:outline-none focus:ring-2 focus:ring-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            </button>
+            <button id="infinite-home-button" class="hidden absolute top-0 left-0 text-white bg-slate-600/50 hover:bg-slate-700/70 rounded-full p-2 m-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></button>
             <div id="wrong-attempts-display" class="absolute top-0 right-0 text-red-500 font-bold text-lg text-shadow m-2 p-2"></div>
             <div id="round-counter" class="text-white text-shadow font-bold text-lg mb-4 h-6"></div>
-            <div id="number-display" class="font-digital text-6xl sm:text-8xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center" aria-live="polite"></div>
-            <!-- Input and Submit Button Wrapper -->
+            <div id="number-display" class="font-digital text-6xl sm:text-8xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center"></div>
             <div class="flex items-stretch justify-center space-x-2">
-                <!-- MODIFIED: Added inputmode="text" for explicit QWERTY keyboard -->
-                <input type="text" inputmode="text" id="input-field" class="flex-grow w-2/3 text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md focus:ring-4 focus:ring-indigo-300 focus:border-indigo-500 outline-none transition disabled:bg-slate-200" placeholder="####" maxlength="4" disabled>
-                <button id="submit-button" class="w-1/3 bg-green-600 text-white font-bold rounded-lg shadow-lg hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-300 transition disabled:bg-slate-400 disabled:cursor-not-allowed" disabled>확인</button>
+                <input type="text" inputmode="text" id="input-field" class="flex-grow w-2/3 text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md" placeholder="####" maxlength="4" disabled>
+                <button id="submit-button" class="w-1/3 bg-green-600 text-white font-bold rounded-lg shadow-lg" disabled>확인</button>
             </div>
-            <div id="feedback-display" class="mt-4 h-6 text-xl font-bold text-shadow transition-opacity duration-300"></div>
+            <div id="feedback-display" class="mt-4 h-6 text-xl font-bold text-shadow"></div>
         </div>
 
-        <!-- Results Screen (initially hidden) -->
-        <div id="results-screen" class="hidden">
-            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">게임 결과</h1>
-            <div class="text-white text-shadow text-2xl space-y-2 mb-8 bg-black/20 p-4 rounded-lg">
-                <p>맞힌 개수: <span id="correct-count" class="font-bold text-green-400">0</span>개</p>
-                <p>틀린 개수: <span id="incorrect-count" class="font-bold text-red-400">0</span>개</p>
-                <p>평균 속도: <span id="average-speed" class="font-bold text-amber-400">0.00</span>초</p>
-            </div>
-            <div class="space-y-4">
-                <button id="retry-button" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300">
-                    다시하기
-                </button>
-                <button id="home-button" class="w-full bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700 focus:outline-none focus:ring-4 focus:ring-slate-300">
-                    처음으로 돌아가기
-                </button>
-            </div>
+        <!-- Department Input Screen (hidden) -->
+        <div id="department-screen" class="hidden">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">기록 등록</h1>
+            <p class="text-white text-shadow mb-4">랭킹에 표시될 학과를 입력하세요.</p>
+            <input type="text" id="department-input" class="w-full text-center text-2xl p-3 border-2 border-slate-300 rounded-lg shadow-md" placeholder="예: 컴퓨터공학부" maxlength="20">
+            <button id="submit-score-button" class="w-full mt-4 bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-green-700">기록 제출 및 랭킹 보기</button>
         </div>
 
+        <!-- Leaderboard Screen (hidden) -->
+        <div id="leaderboard-screen" class="hidden">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">명예의 전당</h1>
+            <div id="leaderboard-list" class="space-y-2 text-left">
+                <!-- Rankings will be inserted here by JavaScript -->
+            </div>
+            <button id="leaderboard-home-button" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700">처음으로 돌아가기</button>
+        </div>
+        
     </div>
 
     <script>
+        // --- Supabase Setup ---
+        // ❗️❗️ 아래 두 줄에 Supabase에서 복사한 URL과 키를 붙여넣으세요!
+        const SUPABASE_URL = 'https://pyqiesyvpkuqqirenggq.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5cWllc3l2cGt1cXFpcmVuZ2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNzMxODEsImV4cCI6MjA3MDY0OTE4MX0.y4cWm8Vthf4s2lvu1GozcIWlKMA0o4FbO_HFHoV0uaY';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         // --- DOM Element References ---
         const startScreen = document.getElementById('start-screen');
         const practiceScreen = document.getElementById('practice-screen');
-        const resultsScreen = document.getElementById('results-screen');
-
+        const departmentScreen = document.getElementById('department-screen');
+        const leaderboardScreen = document.getElementById('leaderboard-screen');
+        const visitorCountDisplay = document.getElementById('visitor-count');
+        const viewRankingButton = document.getElementById('view-ranking-button');
+        const departmentInput = document.getElementById('department-input');
+        const submitScoreButton = document.getElementById('submit-score-button');
+        const leaderboardList = document.getElementById('leaderboard-list');
+        const leaderboardHomeButton = document.getElementById('leaderboard-home-button');
         const mode10Button = document.getElementById('mode-10-button');
         const modeInfiniteButton = document.getElementById('mode-infinite-button');
-        
         const roundCounter = document.getElementById('round-counter');
         const numberDisplay = document.getElementById('number-display');
         const inputField = document.getElementById('input-field');
@@ -113,162 +105,172 @@
         const wrongAttemptsDisplay = document.getElementById('wrong-attempts-display');
         const infiniteHomeButton = document.getElementById('infinite-home-button');
 
-        const correctCountDisplay = document.getElementById('correct-count');
-        const incorrectCountDisplay = document.getElementById('incorrect-count');
-        const averageSpeedDisplay = document.getElementById('average-speed');
-        const retryButton = document.getElementById('retry-button');
-        const homeButton = document.getElementById('home-button');
-
         // --- State Variables ---
-        let gameMode = null;
-        let currentNumber = '';
-        let isFirstRound = true;
-        let roundLimit = 10;
-        let currentRound = 0;
-        let correctAnswers = 0;
-        let wrongAnswers = 0;
-        let timerStart = 0;
-        let timeRecords = [];
+        let gameMode = null, currentNumber = '', isFirstRound = true;
+        let roundLimit = 10, currentRound = 0, correctAnswers = 0, wrongAnswers = 0;
+        let timerStart = 0, timeRecords = [];
+        let lastGameResult = {};
 
-        // --- Event Listeners ---
-        mode10Button.addEventListener('click', () => startGame('10rounds'));
-        modeInfiniteButton.addEventListener('click', () => startGame('infinite'));
-        retryButton.addEventListener('click', () => startGame(gameMode));
-        homeButton.addEventListener('click', goToHome);
-        infiniteHomeButton.addEventListener('click', goToHome);
-        submitButton.addEventListener('click', checkAnswer);
-
-        // MODIFIED: Added 'input' event listener to filter non-numeric characters in real-time.
-        inputField.addEventListener('input', (event) => {
-            // Replace any non-digit characters with an empty string
-            event.target.value = event.target.value.replace(/[^0-9]/g, '');
-        });
-
-        inputField.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' && !inputField.disabled) {
-                checkAnswer();
+        // --- Supabase Functions ---
+        async function recordAndDisplayVisit() {
+            try {
+                await supabaseClient.from('visitors').insert([{}]);
+                const today = new Date().toISOString().slice(0, 10);
+                const { count, error } = await supabaseClient
+                    .from('visitors').select('*', { count: 'exact', head: true })
+                    .gte('created_at', `${today}T00:00:00.000Z`)
+                    .lte('created_at', `${today}T23:59:59.999Z`);
+                if (error) throw error;
+                visitorCountDisplay.textContent = count;
+            } catch (error) {
+                console.error('Error interacting with Supabase:', error);
+                visitorCountDisplay.textContent = '??';
             }
-        });
+        }
+        
+        async function submitScoreAndShowLeaderboard() {
+            const department = departmentInput.value.trim() || '익명';
+            if (lastGameResult.avgSpeed) {
+                submitScoreButton.disabled = true;
+                submitScoreButton.textContent = '등록 중...';
+                
+                await supabaseClient.from('leaderboard').insert([
+                    { department: department, avg_speed: lastGameResult.avgSpeed }
+                ]);
+                
+                submitScoreButton.disabled = false;
+                submitScoreButton.textContent = '기록 제출 및 랭킹 보기';
+            }
+            fetchAndShowLeaderboard();
+        }
 
-        // --- Functions ---
-        function startGame(mode) {
-            gameMode = mode;
-            isFirstRound = true;
-            currentRound = 0;
-            correctAnswers = 0;
-            wrongAnswers = 0;
-            timeRecords = [];
-
+        async function fetchAndShowLeaderboard() {
+            departmentScreen.classList.add('hidden');
             startScreen.classList.add('hidden');
-            resultsScreen.classList.add('hidden');
-            practiceScreen.classList.remove('hidden');
-            
-            if (mode === 'infinite') {
-                infiniteHomeButton.classList.remove('hidden');
-            } else {
-                infiniteHomeButton.classList.add('hidden');
+            leaderboardScreen.classList.remove('hidden');
+            leaderboardList.innerHTML = `<div class="text-white text-center">랭킹을 불러오는 중...</div>`;
+
+            const { data, error } = await supabaseClient
+                .from('leaderboard')
+                .select('department, avg_speed')
+                .order('avg_speed', { ascending: true })
+                .limit(8);
+
+            if (error) {
+                leaderboardList.innerHTML = `<div class="text-red-400 text-center">랭킹을 불러오는 데 실패했습니다.</div>`;
+                return;
             }
 
+            leaderboardList.innerHTML = ''; // Clear loading message
+            data.forEach((record, index) => {
+                const rank = index + 1;
+                const medal = ['🥇', '🥈', '🥉'][index] || `<span class="text-sm">${rank}위</span>`;
+                const li = document.createElement('li');
+                li.className = 'flex items-center justify-between bg-black/30 p-3 rounded-lg text-white text-shadow';
+                li.innerHTML = `
+                    <div class="flex items-center">
+                        <span class="font-bold text-xl w-12 text-left">${medal}</span>
+                        <span class="font-semibold">${record.department}</span>
+                    </div>
+                    <span class="font-digital font-bold text-amber-400">${record.avg_speed.toFixed(2)}초</span>
+                `;
+                leaderboardList.appendChild(li);
+            });
+        }
+
+        // --- Game Logic ---
+        function startGame(mode) {
+            gameMode = mode; isFirstRound = true; currentRound = 0;
+            correctAnswers = 0; wrongAnswers = 0; timeRecords = [];
+            startScreen.classList.add('hidden');
+            practiceScreen.classList.remove('hidden');
+            if (mode === 'infinite') infiniteHomeButton.classList.remove('hidden');
+            else infiniteHomeButton.classList.add('hidden');
             wrongAttemptsDisplay.textContent = `틀린 횟수: 0`;
             startNewRound();
         }
-
+        
         function startNewRound() {
-            if (gameMode === '10rounds' && currentRound >= roundLimit) {
-                showResults();
-                return;
-            }
-            
+            if (gameMode === '10rounds' && currentRound >= roundLimit) { showResults(); return; }
             currentRound++;
-            if (gameMode === '10rounds') {
-                roundCounter.textContent = `${currentRound} / ${roundLimit}`;
-            } else {
-                roundCounter.textContent = `라운드 ${currentRound}`;
-            }
-
-            inputField.disabled = true;
-            submitButton.disabled = true;
-            inputField.value = '';
-            feedbackDisplay.textContent = '';
-            feedbackDisplay.className = 'mt-4 h-6 text-xl font-bold text-shadow';
-
-            const countdownDuration = isFirstRound ? 3 : 1;
-            countdown(countdownDuration);
+            roundCounter.textContent = gameMode === '10rounds' ? `${currentRound} / ${roundLimit}` : `라운드 ${currentRound}`;
+            inputField.disabled = true; submitButton.disabled = true;
+            inputField.value = ''; feedbackDisplay.textContent = '';
+            countdown(isFirstRound ? 3 : 1);
             isFirstRound = false;
         }
 
         function countdown(seconds) {
             if (seconds > 0) {
-                numberDisplay.textContent = seconds;
-                numberDisplay.style.color = 'white';
+                numberDisplay.textContent = seconds; numberDisplay.style.color = 'white';
                 setTimeout(() => countdown(seconds - 1), 1000);
             } else {
                 currentNumber = generateRandomNumber();
-                numberDisplay.textContent = currentNumber;
-                numberDisplay.style.color = '#FBBF24';
-                
-                inputField.disabled = false;
-                submitButton.disabled = false;
-                inputField.focus();
-                timerStart = Date.now();
+                numberDisplay.textContent = currentNumber; numberDisplay.style.color = '#FBBF24';
+                inputField.disabled = false; submitButton.disabled = false;
+                inputField.focus(); timerStart = Date.now();
             }
         }
 
         function generateRandomNumber() {
             const firstDigit = Math.floor(Math.random() * 9) + 1;
             let otherDigits = '';
-            for (let i = 0; i < 3; i++) {
-                otherDigits += Math.floor(Math.random() * 10);
-            }
+            for (let i = 0; i < 3; i++) { otherDigits += Math.floor(Math.random() * 10); }
             return `${firstDigit}${otherDigits}`;
         }
 
         function checkAnswer() {
             if (inputField.disabled) return;
             const userInput = inputField.value;
-
             if (userInput === currentNumber) {
                 const timeTaken = (Date.now() - timerStart) / 1000;
-                timeRecords.push(timeTaken);
-                correctAnswers++;
+                timeRecords.push(timeTaken); correctAnswers++;
                 feedbackDisplay.textContent = `정답! (${timeTaken.toFixed(2)}초)`;
                 feedbackDisplay.style.color = '#10B981';
-                
-                inputField.disabled = true;
-                submitButton.disabled = true;
+                inputField.disabled = true; submitButton.disabled = true;
                 setTimeout(startNewRound, 500);
             } else {
                 wrongAnswers++;
                 wrongAttemptsDisplay.textContent = `틀린 횟수: ${wrongAnswers}`;
-                feedbackDisplay.textContent = '다시';
-                feedbackDisplay.style.color = '#EF4444';
+                feedbackDisplay.textContent = '다시'; feedbackDisplay.style.color = '#EF4444';
                 inputField.value = '';
                 inputField.classList.add('animate-bounce');
-                setTimeout(() => {
-                    inputField.classList.remove('animate-bounce');
-                }, 500);
+                setTimeout(() => inputField.classList.remove('animate-bounce'), 500);
             }
         }
 
         function showResults() {
             practiceScreen.classList.add('hidden');
-            resultsScreen.classList.remove('hidden');
-            correctCountDisplay.textContent = correctAnswers;
-            incorrectCountDisplay.textContent = wrongAnswers;
-
+            departmentScreen.classList.remove('hidden');
+            
             let avgSpeed = 0;
             if (timeRecords.length > 0) {
                 const totalTime = timeRecords.reduce((sum, time) => sum + time, 0);
-                avgSpeed = (totalTime / timeRecords.length).toFixed(2);
+                avgSpeed = (totalTime / timeRecords.length);
             }
-            averageSpeedDisplay.textContent = avgSpeed;
+            lastGameResult = { avgSpeed: avgSpeed };
+            departmentInput.value = '';
+            departmentInput.focus();
         }
 
         function goToHome() {
-            resultsScreen.classList.add('hidden');
+            departmentScreen.classList.add('hidden');
+            leaderboardScreen.classList.add('hidden');
             practiceScreen.classList.add('hidden');
             startScreen.classList.remove('hidden');
         }
+
+        // --- Event Listeners & Initial Call ---
+        document.addEventListener('DOMContentLoaded', recordAndDisplayVisit);
+        mode10Button.addEventListener('click', () => startGame('10rounds'));
+        modeInfiniteButton.addEventListener('click', () => startGame('infinite'));
+        viewRankingButton.addEventListener('click', fetchAndShowLeaderboard);
+        submitScoreButton.addEventListener('click', submitScoreAndShowLeaderboard);
+        leaderboardHomeButton.addEventListener('click', goToHome);
+        infiniteHomeButton.addEventListener('click', goToHome);
+        submitButton.addEventListener('click', checkAnswer);
+        inputField.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); });
+        inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !inputField.disabled) checkAnswer(); });
     </script>
 </body>
 </html>
