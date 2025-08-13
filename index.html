@@ -61,14 +61,17 @@
 
         <!-- Practice Screen (initially hidden) -->
         <div id="practice-screen" class="hidden relative">
-            <!-- Home button for infinite mode -->
             <button id="infinite-home-button" class="hidden absolute top-0 left-0 text-white bg-slate-600/50 hover:bg-slate-700/70 rounded-full p-2 m-2 focus:outline-none focus:ring-2 focus:ring-white">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
             </button>
             <div id="wrong-attempts-display" class="absolute top-0 right-0 text-red-500 font-bold text-lg text-shadow m-2 p-2"></div>
             <div id="round-counter" class="text-white text-shadow font-bold text-lg mb-4 h-6"></div>
             <div id="number-display" class="font-digital text-6xl sm:text-8xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center" aria-live="polite"></div>
-            <input type="tel" id="input-field" class="w-full text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md focus:ring-4 focus:ring-indigo-300 focus:border-indigo-500 outline-none transition disabled:bg-slate-200" placeholder="####" maxlength="4" disabled>
+            <!-- Input and Submit Button Wrapper -->
+            <div class="flex items-stretch justify-center space-x-2">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" id="input-field" class="flex-grow w-2/3 text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md focus:ring-4 focus:ring-indigo-300 focus:border-indigo-500 outline-none transition disabled:bg-slate-200" placeholder="####" maxlength="4" disabled>
+                <button id="submit-button" class="w-1/3 bg-green-600 text-white font-bold rounded-lg shadow-lg hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-300 transition disabled:bg-slate-400 disabled:cursor-not-allowed" disabled>확인</button>
+            </div>
             <div id="feedback-display" class="mt-4 h-6 text-xl font-bold text-shadow transition-opacity duration-300"></div>
         </div>
 
@@ -104,6 +107,7 @@
         const roundCounter = document.getElementById('round-counter');
         const numberDisplay = document.getElementById('number-display');
         const inputField = document.getElementById('input-field');
+        const submitButton = document.getElementById('submit-button'); // New button
         const feedbackDisplay = document.getElementById('feedback-display');
         const wrongAttemptsDisplay = document.getElementById('wrong-attempts-display');
         const infiniteHomeButton = document.getElementById('infinite-home-button');
@@ -115,10 +119,9 @@
         const homeButton = document.getElementById('home-button');
 
         // --- State Variables ---
-        let gameMode = null; // '10rounds' or 'infinite'
+        let gameMode = null;
         let currentNumber = '';
         let isFirstRound = true;
-        
         let roundLimit = 10;
         let currentRound = 0;
         let correctAnswers = 0;
@@ -132,11 +135,9 @@
         retryButton.addEventListener('click', () => startGame(gameMode));
         homeButton.addEventListener('click', goToHome);
         infiniteHomeButton.addEventListener('click', goToHome);
+        submitButton.addEventListener('click', checkAnswer); // New listener for the button
 
         inputField.addEventListener('keydown', (event) => {
-            if (!/[0-9]/.test(event.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'].includes(event.key)) {
-                event.preventDefault();
-            }
             if (event.key === 'Enter' && !inputField.disabled) {
                 checkAnswer();
             }
@@ -155,7 +156,6 @@
             resultsScreen.classList.add('hidden');
             practiceScreen.classList.remove('hidden');
             
-            // Show/hide the home button based on mode
             if (mode === 'infinite') {
                 infiniteHomeButton.classList.remove('hidden');
             } else {
@@ -180,6 +180,7 @@
             }
 
             inputField.disabled = true;
+            submitButton.disabled = true; // Disable submit button
             inputField.value = '';
             feedbackDisplay.textContent = '';
             feedbackDisplay.className = 'mt-4 h-6 text-xl font-bold text-shadow';
@@ -200,8 +201,9 @@
                 numberDisplay.style.color = '#FBBF24';
                 
                 inputField.disabled = false;
+                submitButton.disabled = false; // Enable submit button
                 inputField.focus();
-                timerStart = Date.now(); // Start timer when number appears
+                timerStart = Date.now();
             }
         }
 
@@ -215,6 +217,7 @@
         }
 
         function checkAnswer() {
+            if (inputField.disabled) return; // Prevent check if not active
             const userInput = inputField.value;
 
             if (userInput === currentNumber) {
@@ -223,6 +226,9 @@
                 correctAnswers++;
                 feedbackDisplay.textContent = `정답! (${timeTaken.toFixed(2)}초)`;
                 feedbackDisplay.style.color = '#10B981';
+                
+                inputField.disabled = true; // Prevent further input
+                submitButton.disabled = true; // Prevent further clicks
                 setTimeout(startNewRound, 500);
             } else {
                 wrongAnswers++;
