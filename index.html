@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수강신청 매크로 방지 연습</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Noto Sans KR for general text, Roboto Mono for numbers -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom font styles */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* Add a semi-transparent overlay to the body itself */
+            background-color: rgba(0, 0, 0, 0.4);
+            background-blend-mode: overlay;
+        }
+        /* Create a pseudo-element to hold the blurred background image */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('./images.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            /* Apply a blur filter */
+            filter: blur(4px);
+            /* Place it behind all other content */
+            z-index: -1;
+        }
+        .font-digital {
+            font-family: 'Roboto Mono', monospace;
+        }
+        .text-shadow {
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<!-- The body tag no longer needs the inline style -->
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- Container without background to give a "cut-out" feel -->
+    <div id="app-container" class="w-full max-w-md mx-auto p-6 sm:p-8 text-center transition-all duration-300">
+
+        <!-- Start Screen -->
+        <div id="start-screen">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-2">수강신청 연습</h1>
+            <p class="text-white text-shadow mb-8">실전 전에 속도를 테스트하세요!</p>
+            <button id="start-button" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-transform transform hover:scale-105">
+                연습 시작
+            </button>
+        </div>
+
+        <!-- Practice Screen (initially hidden) -->
+        <div id="practice-screen" class="hidden">
+            <!-- Number Display -->
+            <div id="number-display" class="font-digital text-6xl sm:text-8xl font-black text-white text-shadow my-8 h-24 flex items-center justify-center" aria-live="polite"></div>
+
+            <!-- Input Field -->
+            <input type="tel" id="input-field" class="w-full text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md focus:ring-4 focus:ring-indigo-300 focus:border-indigo-500 outline-none transition disabled:bg-slate-200" placeholder="####" maxlength="4" disabled>
+
+            <!-- Feedback Message -->
+            <div id="feedback-display" class="mt-4 h-6 text-xl font-bold text-shadow transition-opacity duration-300"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DOM Element References ---
+        const startScreen = document.getElementById('start-screen');
+        const practiceScreen = document.getElementById('practice-screen');
+        const startButton = document.getElementById('start-button');
+        const numberDisplay = document.getElementById('number-display');
+        const inputField = document.getElementById('input-field');
+        const feedbackDisplay = document.getElementById('feedback-display');
+
+        // --- State Variables ---
+        let currentNumber = '';
+        let isFirstRound = true;
+
+        // --- Event Listeners ---
+        startButton.addEventListener('click', showPracticeScreen);
+        inputField.addEventListener('keydown', (event) => {
+            if (!/[0-9]/.test(event.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'].includes(event.key)) {
+                event.preventDefault();
+            }
+            if (event.key === 'Enter' && !inputField.disabled) {
+                checkAnswer();
+            }
+        });
+
+        // --- Functions ---
+        function showPracticeScreen() {
+            startScreen.classList.add('hidden');
+            practiceScreen.classList.remove('hidden');
+            startNewRound();
+        }
+
+        function startNewRound() {
+            inputField.disabled = true;
+            inputField.value = '';
+            feedbackDisplay.textContent = '';
+            feedbackDisplay.className = 'mt-4 h-6 text-xl font-bold text-shadow'; // Reset class
+
+            const countdownDuration = isFirstRound ? 3 : 1;
+            countdown(countdownDuration);
+            isFirstRound = false;
+        }
+
+        function countdown(seconds) {
+            if (seconds > 0) {
+                numberDisplay.textContent = seconds;
+                numberDisplay.style.color = 'white'; // Countdown number color
+                setTimeout(() => countdown(seconds - 1), 1000);
+            } else {
+                currentNumber = generateRandomNumber();
+                numberDisplay.textContent = currentNumber;
+                numberDisplay.style.color = '#FBBF24'; // Highlight the target number (amber color)
+                
+                inputField.disabled = false;
+                inputField.focus();
+            }
+        }
+
+        function generateRandomNumber() {
+            const firstDigit = Math.floor(Math.random() * 9) + 1;
+            let otherDigits = '';
+            for (let i = 0; i < 3; i++) {
+                otherDigits += Math.floor(Math.random() * 10);
+            }
+            return `${firstDigit}${otherDigits}`;
+        }
+
+        function checkAnswer() {
+            const userInput = inputField.value;
+
+            if (userInput === currentNumber) {
+                feedbackDisplay.textContent = '정답!';
+                feedbackDisplay.style.color = '#10B981'; // Green color for correct
+                setTimeout(startNewRound, 500);
+            } else {
+                feedbackDisplay.textContent = '다시';
+                feedbackDisplay.style.color = '#EF4444'; // Red color for incorrect
+                inputField.value = '';
+                inputField.classList.add('animate-bounce');
+                setTimeout(() => inputField.classList.remove('animate-bounce'), 500);
+            }
+        }
+    </script>
+</body>
+</html>
