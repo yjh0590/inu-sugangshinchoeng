@@ -79,7 +79,6 @@
 
     <script>
         // --- Supabase Setup ---
-        // ❗️❗️ 아래 두 줄에 Supabase에서 복사한 URL과 키를 붙여넣으세요!
         const SUPABASE_URL = 'https://pyqiesyvpkuqqirenggq.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5cWllc3l2cGt1cXFpcmVuZ2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNzMxODEsImV4cCI6MjA3MDY0OTE4MX0.y4cWm8Vthf4s2lvu1GozcIWlKMA0o4FbO_HFHoV0uaY';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -112,21 +111,7 @@
         let lastGameResult = {};
 
         // --- Supabase Functions ---
-        async function recordAndDisplayVisit() {
-            try {
-                await supabaseClient.from('visitors').insert([{}]);
-                const today = new Date().toISOString().slice(0, 10);
-                const { count, error } = await supabaseClient
-                    .from('visitors').select('*', { count: 'exact', head: true })
-                    .gte('created_at', `${today}T00:00:00.000Z`)
-                    .lte('created_at', `${today}T23:59:59.999Z`);
-                if (error) throw error;
-                visitorCountDisplay.textContent = count;
-            } catch (error) {
-                console.error('Error interacting with Supabase:', error);
-                visitorCountDisplay.textContent = '??';
-            }
-        }
+        async function recordAndDisplayVisit() { /* ... (same as before) ... */ }
         
         async function submitScoreAndShowLeaderboard() {
             const department = departmentInput.value.trim() || '익명';
@@ -150,27 +135,43 @@
             leaderboardScreen.classList.remove('hidden');
             leaderboardList.innerHTML = `<div class="text-white text-center">랭킹을 불러오는 중...</div>`;
 
+            // MODIFIED: Select 'created_at' as well
             const { data, error } = await supabaseClient
                 .from('leaderboard')
-                .select('department, avg_speed')
+                .select('department, avg_speed, created_at')
                 .order('avg_speed', { ascending: true })
                 .limit(8);
 
             if (error) {
+                console.error('Error fetching leaderboard:', error);
                 leaderboardList.innerHTML = `<div class="text-red-400 text-center">랭킹을 불러오는 데 실패했습니다.</div>`;
                 return;
             }
 
-            leaderboardList.innerHTML = ''; // Clear loading message
+            leaderboardList.innerHTML = '';
             data.forEach((record, index) => {
                 const rank = index + 1;
                 const medal = ['🥇', '🥈', '🥉'][index] || `<span class="text-sm">${rank}위</span>`;
+                
+                // MODIFIED: Format the timestamp
+                const date = new Date(record.created_at);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}`;
+
                 const li = document.createElement('li');
                 li.className = 'flex items-center justify-between bg-black/30 p-3 rounded-lg text-white text-shadow';
+                // MODIFIED: Added timestamp to the display
                 li.innerHTML = `
                     <div class="flex items-center">
                         <span class="font-bold text-xl w-12 text-left">${medal}</span>
-                        <span class="font-semibold">${record.department}</span>
+                        <div>
+                            <span class="font-semibold">${record.department}</span>
+                            <span class="block text-xs text-gray-300">${formattedDate}</span>
+                        </div>
                     </div>
                     <span class="font-digital font-bold text-amber-400">${record.avg_speed.toFixed(2)}초</span>
                 `;
@@ -179,6 +180,43 @@
         }
 
         // --- Game Logic ---
+        function startGame(mode) { /* ... (same as before) ... */ }
+        function startNewRound() { /* ... (same as before) ... */ }
+        function countdown(seconds) { /* ... (same as before) ... */ }
+        function generateRandomNumber() { /* ... (same as before) ... */ }
+        function checkAnswer() { /* ... (same as before) ... */ }
+        function showResults() { /* ... (same as before) ... */ }
+        function goToHome() { /* ... (same as before) ... */ }
+
+        // --- Event Listeners & Initial Call ---
+        document.addEventListener('DOMContentLoaded', recordAndDisplayVisit);
+        mode10Button.addEventListener('click', () => startGame('10rounds'));
+        modeInfiniteButton.addEventListener('click', () => startGame('infinite'));
+        viewRankingButton.addEventListener('click', fetchAndShowLeaderboard);
+        submitScoreButton.addEventListener('click', submitScoreAndShowLeaderboard);
+        leaderboardHomeButton.addEventListener('click', goToHome);
+        infiniteHomeButton.addEventListener('click', goToHome);
+        submitButton.addEventListener('click', checkAnswer);
+        inputField.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); });
+        inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !inputField.disabled) checkAnswer(); });
+
+        // Re-defining full functions to ensure they are available
+        function recordAndDisplayVisit() {
+            try {
+                supabaseClient.from('visitors').insert([{}]);
+                const today = new Date().toISOString().slice(0, 10);
+                supabaseClient.from('visitors').select('*', { count: 'exact', head: true })
+                    .gte('created_at', `${today}T00:00:00.000Z`)
+                    .lte('created_at', `${today}T23:59:59.999Z`)
+                    .then(({ count, error }) => {
+                        if (error) throw error;
+                        visitorCountDisplay.textContent = count;
+                    });
+            } catch (error) {
+                console.error('Error interacting with Supabase:', error);
+                visitorCountDisplay.textContent = '??';
+            }
+        }
         function startGame(mode) {
             gameMode = mode; isFirstRound = true; currentRound = 0;
             correctAnswers = 0; wrongAnswers = 0; timeRecords = [];
@@ -189,7 +227,6 @@
             wrongAttemptsDisplay.textContent = `틀린 횟수: 0`;
             startNewRound();
         }
-        
         function startNewRound() {
             if (gameMode === '10rounds' && currentRound >= roundLimit) { showResults(); return; }
             currentRound++;
@@ -199,7 +236,6 @@
             countdown(isFirstRound ? 3 : 1);
             isFirstRound = false;
         }
-
         function countdown(seconds) {
             if (seconds > 0) {
                 numberDisplay.textContent = seconds; numberDisplay.style.color = 'white';
@@ -211,14 +247,12 @@
                 inputField.focus(); timerStart = Date.now();
             }
         }
-
         function generateRandomNumber() {
             const firstDigit = Math.floor(Math.random() * 9) + 1;
             let otherDigits = '';
             for (let i = 0; i < 3; i++) { otherDigits += Math.floor(Math.random() * 10); }
             return `${firstDigit}${otherDigits}`;
         }
-
         function checkAnswer() {
             if (inputField.disabled) return;
             const userInput = inputField.value;
@@ -238,11 +272,9 @@
                 setTimeout(() => inputField.classList.remove('animate-bounce'), 500);
             }
         }
-
         function showResults() {
             practiceScreen.classList.add('hidden');
             departmentScreen.classList.remove('hidden');
-            
             let avgSpeed = 0;
             if (timeRecords.length > 0) {
                 const totalTime = timeRecords.reduce((sum, time) => sum + time, 0);
@@ -252,25 +284,12 @@
             departmentInput.value = '';
             departmentInput.focus();
         }
-
         function goToHome() {
             departmentScreen.classList.add('hidden');
             leaderboardScreen.classList.add('hidden');
             practiceScreen.classList.add('hidden');
             startScreen.classList.remove('hidden');
         }
-
-        // --- Event Listeners & Initial Call ---
-        document.addEventListener('DOMContentLoaded', recordAndDisplayVisit);
-        mode10Button.addEventListener('click', () => startGame('10rounds'));
-        modeInfiniteButton.addEventListener('click', () => startGame('infinite'));
-        viewRankingButton.addEventListener('click', fetchAndShowLeaderboard);
-        submitScoreButton.addEventListener('click', submitScoreAndShowLeaderboard);
-        leaderboardHomeButton.addEventListener('click', goToHome);
-        infiniteHomeButton.addEventListener('click', goToHome);
-        submitButton.addEventListener('click', checkAnswer);
-        inputField.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); });
-        inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !inputField.disabled) checkAnswer(); });
     </script>
 </body>
 </html>
