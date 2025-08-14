@@ -21,7 +21,6 @@
     }
     body::before {
         content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        /* ✅ FIXED: 여기에 GitHub 원본(Raw) 이미지 URL을 붙여넣으세요. */
         background-image: url('https://raw.githubusercontent.com/yjh0590/inu-sugangshinchoeng/refs/heads/main/images.jpeg');
         background-size: cover; background-position: center;
         filter: blur(4px); z-index: -1;
@@ -332,6 +331,9 @@
             }
         }
 
+        /**
+         * MODIFIED: Best record is now pinned to the top, and the rest are sorted by date.
+         */
         function showPersonalRecords() {
             startScreen.classList.add('hidden');
             personalRecordsScreen.classList.remove('hidden');
@@ -344,12 +346,21 @@
                 return;
             }
 
-            const sortedRecords = [...records].sort((a, b) => a.speed - b.speed);
-            const bestSpeed = sortedRecords[0].speed;
-            records.sort((a, b) => new Date(b.date) - new Date(a.date));
+            // 1. Find the best record (lowest speed)
+            const bestRecord = records.reduce((best, current) => (current.speed < best.speed ? current : best), records[0]);
 
-            records.forEach(record => {
-                const isBest = record.speed === bestSpeed;
+            // 2. Filter out the best record to sort the rest
+            const otherRecords = records.filter(record => record !== bestRecord);
+
+            // 3. Sort the remaining records by date (most recent first)
+            otherRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            // 4. Combine the best record at the top with the rest
+            const finalSortedRecords = [bestRecord, ...otherRecords];
+
+            // 5. Render the fully sorted list
+            finalSortedRecords.forEach((record, index) => {
+                const isBest = index === 0; // The first item is always the best
                 const medal = isBest ? '👑' : '•';
                 const textColor = isBest ? 'text-amber-400' : 'text-white';
                 const date = new Date(record.date);
