@@ -154,43 +154,43 @@
         }
         
         function showPersonalRecords() {
-            startScreen.classList.add('hidden');
-            personalRecordsScreen.classList.remove('hidden');
-            
-            const records = JSON.parse(localStorage.getItem('personalBests')) || [];
-            personalRecordsList.innerHTML = '';
+    startScreen.classList.add('hidden');
+    personalRecordsScreen.classList.remove('hidden');
+    
+    const records = JSON.parse(localStorage.getItem('personalBests')) || [];
+    personalRecordsList.innerHTML = '';
 
-            if (records.length === 0) {
-                personalRecordsList.innerHTML = `<div class="text-white text-center">아직 저장된 기록이 없습니다.<br>'10개 모드'를 플레이하고 기록을 저장해보세요!</div>`;
-                return;
-            }
+    if (records.length === 0) {
+        personalRecordsList.innerHTML = `<div class="text-white text-center">아직 저장된 기록이 없습니다.<br>'10개 모드'를 플레이하고 기록을 저장해보세요!</div>`;
+        return;
+    }
 
-            const sortedRecords = [...records].sort((a, b) => a.speed - b.speed);
-            const bestSpeed = sortedRecords[0].speed;
+    // 1. records 배열을 속도(speed)가 빠른 순서(오름차순)로 정렬합니다.
+    records.sort((a, b) => a.speed - b.speed);
 
-            records.sort((a, b) => new Date(b.date) - new Date(a.date));
+    // 2. 속도 순으로 정렬된 배열을 사용해 목록을 만듭니다.
+    records.forEach((record, index) => {
+        // 정렬 후 첫 번째 요소(index 0)가 최고 기록이 됩니다.
+        const isBest = index === 0; 
+        const medal = isBest ? '👑' : '•';
+        const textColor = isBest ? 'text-amber-400' : 'text-white';
 
-            records.forEach(record => {
-                const isBest = record.speed === bestSpeed;
-                const medal = isBest ? '👑' : '•';
-                const textColor = isBest ? 'text-amber-400' : 'text-white';
-
-                const date = new Date(record.date);
-                const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-                
-                const li = document.createElement('li');
-                li.className = `flex items-center justify-between bg-black/30 p-3 rounded-lg text-shadow ${textColor}`;
-                li.innerHTML = `
-                    <div class="flex items-center">
-                        <span class="font-bold text-xl w-8 text-center">${medal}</span>
-                        <div class="text-left">
-                            <span class="font-digital font-bold">${record.speed.toFixed(4)}초</span>
-                            <span class="block text-xs text-gray-300">${formattedDate}</span>
-                        </div>
-                    </div>`;
-                personalRecordsList.appendChild(li);
-            });
-        }
+        const date = new Date(record.date);
+        const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        
+        const li = document.createElement('li');
+        li.className = `flex items-center justify-between bg-black/30 p-3 rounded-lg text-shadow ${textColor}`;
+        li.innerHTML = `
+            <div class="flex items-center">
+                <span class="font-bold text-xl w-8 text-center">${medal}</span>
+                <div class="text-left">
+                    <span class="font-digital font-bold">${record.speed.toFixed(4)}초</span>
+                    <span class="block text-xs text-gray-300">${formattedDate}</span>
+                </div>
+            </div>`;
+        personalRecordsList.appendChild(li);
+    });
+}
 
         /**
          * MODIFIED: The submit button is now disabled by default when this screen appears.
@@ -326,3 +326,4 @@
     </script>
 </body>
 </html>
+
