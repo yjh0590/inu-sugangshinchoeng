@@ -47,7 +47,11 @@
                 <button id="view-ranking-button" class="w-full bg-amber-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-amber-700">랭킹 보기</button>
                 <button id="view-personal-records-button" class="w-full bg-sky-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-sky-700">개인 기록 보기</button>
             </div>
-            <div class="mt-8 text-white text-shadow">총 방문자: <span id="visitor-count" class="font-bold">...</span>명</div>
+            <!-- MODIFIED: Stats Display -->
+            <div class="mt-8 flex justify-center items-center space-x-6 text-white text-shadow text-sm">
+                <div>총 방문자: <span id="visitor-count" class="font-bold">...</span>명</div>
+                <div>평균 속도: <span id="average-speed" class="font-bold">...</span>초</div>
+            </div>
         </div>
 
         <!-- Practice Screen (hidden) -->
@@ -133,6 +137,7 @@
         const leaderboardScreen = document.getElementById('leaderboard-screen');
         const personalRecordsScreen = document.getElementById('personal-records-screen');
         const visitorCountDisplay = document.getElementById('visitor-count');
+        const averageSpeedDisplay = document.getElementById('average-speed'); // New element
         const viewRankingButton = document.getElementById('view-ranking-button');
         const viewPersonalRecordsButton = document.getElementById('view-personal-records-button');
         const departmentSelect = document.getElementById('department-select');
@@ -185,17 +190,44 @@
         departmentSelect.addEventListener('change', () => { submitScoreButton.disabled = !departmentSelect.value; });
 
         // --- Core Functions ---
-        async function recordAndDisplayVisit() {
+        
+        /**
+         * MODIFIED: Fetches and displays both visitor count and average speed on the main screen.
+         * Also records a new visit.
+         */
+        async function initializeMainScreenStats() {
             try {
+                // 1. Record a new visit
                 await supabaseClient.from('visitors').insert([{}]);
-                const { count, error } = await supabaseClient
+
+                // 2. Fetch total visitor count
+                const { count: visitorCount, error: visitorError } = await supabaseClient
                     .from('visitors')
                     .select('*', { count: 'exact', head: true });
-                if (error) throw error;
-                if (visitorCountDisplay) visitorCountDisplay.textContent = count;
+
+                if (visitorError) throw visitorError;
+                if (visitorCountDisplay) visitorCountDisplay.textContent = visitorCount;
+
+                // 3. Fetch all leaderboard records to calculate average speed
+                const { data: leaderboardData, error: leaderboardError } = await supabaseClient
+                    .from('leaderboard')
+                    .select('avg_speed');
+
+                if (leaderboardError) throw leaderboardError;
+
+                // 4. Calculate and display average speed
+                if (leaderboardData && leaderboardData.length > 0) {
+                    const totalSpeed = leaderboardData.reduce((sum, record) => sum + record.avg_speed, 0);
+                    const avgSpeed = totalSpeed / leaderboardData.length;
+                    if (averageSpeedDisplay) averageSpeedDisplay.textContent = avgSpeed.toFixed(4);
+                } else {
+                    if (averageSpeedDisplay) averageSpeedDisplay.textContent = 'N/A';
+                }
+
             } catch (error) {
-                console.error('Error recording/fetching visit count:', error);
+                console.error('Error initializing main screen stats:', error);
                 if (visitorCountDisplay) visitorCountDisplay.textContent = '??';
+                if (averageSpeedDisplay) averageSpeedDisplay.textContent = '??';
             }
         }
         
@@ -331,9 +363,6 @@
             }
         }
 
-        /**
-         * MODIFIED: Best record is now pinned to the top, and the rest are sorted by date.
-         */
         function showPersonalRecords() {
             startScreen.classList.add('hidden');
             personalRecordsScreen.classList.remove('hidden');
@@ -346,21 +375,13 @@
                 return;
             }
 
-            // 1. Find the best record (lowest speed)
             const bestRecord = records.reduce((best, current) => (current.speed < best.speed ? current : best), records[0]);
-
-            // 2. Filter out the best record to sort the rest
             const otherRecords = records.filter(record => record !== bestRecord);
-
-            // 3. Sort the remaining records by date (most recent first)
             otherRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            // 4. Combine the best record at the top with the rest
             const finalSortedRecords = [bestRecord, ...otherRecords];
 
-            // 5. Render the fully sorted list
             finalSortedRecords.forEach((record, index) => {
-                const isBest = index === 0; // The first item is always the best
+                const isBest = index === 0;
                 const medal = isBest ? '👑' : '•';
                 const textColor = isBest ? 'text-amber-400' : 'text-white';
                 const date = new Date(record.date);
@@ -491,7 +512,7 @@
         }
 
         // --- Initialize App ---
-        document.addEventListener('DOMContentLoaded', recordAndDisplayVisit);
+        document.addEventListener('DOMContentLoaded', initializeMainScreenStats);
         mode10Button.addEventListener('click', () => startGame('10rounds'));
         modeInfiniteButton.addEventListener('click', () => startGame('infinite'));
         viewRankingButton.addEventListener('click', fetchAndShowLeaderboard);
