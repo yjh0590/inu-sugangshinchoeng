@@ -13,26 +13,25 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
 <style>
-body {
-font-family: 'Noto Sans KR', sans-serif;
--webkit-font-smoothing: antialiased;
-background-color: rgba(0, 0, 0, 0.4);
-background-blend-mode: overlay;
-}
-body::before {
-content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('./images.jpeg');
-            background-size: cover; background-position: center;
-            filter: blur(4px); z-index: -1;
-        }
-        .font-digital { font-family: 'Roboto Mono', monospace; }
-        .text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
-        /* Make the dropdown scrollable */
-        #department-select {
-            max-height: 200px;
-            overflow-y: auto;
-        }
-    </style>
+    body {
+        font-family: 'Noto Sans KR', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        background-color: rgba(0, 0, 0, 0.4);
+        background-blend-mode: overlay;
+    }
+    body::before {
+        content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-image: url('https://source.unsplash.com/random/1600x900/?university,campus');
+        background-size: cover; background-position: center;
+        filter: blur(4px); z-index: -1;
+    }
+    .font-digital { font-family: 'Roboto Mono', monospace; }
+    .text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+    #department-select {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+</style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
 
@@ -58,7 +57,7 @@ content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             <div id="round-counter" class="text-white text-shadow font-bold text-lg mb-4 h-6"></div>
             <div id="number-display" class="font-digital text-6xl sm:text-8xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center"></div>
             <div class="flex items-stretch justify-center space-x-2">
-                <input type="text" id="input-field" class="flex-grow w-2/3 text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md" placeholder="####" maxlength="4" disabled>
+                <input type="text" pattern="[0-9]*" inputmode="numeric" id="input-field" class="flex-grow w-2/3 text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md" placeholder="####" maxlength="4" disabled>
                 <button id="submit-button" class="w-1/3 bg-green-600 text-white font-bold rounded-lg shadow-lg" disabled>확인</button>
             </div>
             <div id="feedback-display" class="mt-4 h-6 text-xl font-bold text-shadow"></div>
@@ -91,13 +90,24 @@ content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                  <optgroup label="동북아국제통상물류학부"><option value="동북아국제통상전공">동북아국제통상전공</option><option value="스마트물류공학전공">스마트물류공학전공</option></optgroup>
                  <optgroup label="법학부"><option value="법학부">법학부</option></optgroup>
             </select>
-            <button id="submit-score-button" class="w-full mt-4 bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-green-700">기록 제출 및 랭킹 보기</button>
+            <button id="submit-score-button" class="w-full mt-4 bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-green-700" disabled>기록 제출 및 랭킹 보기</button>
         </div>
 
         <!-- Leaderboard Screen (hidden) -->
         <div id="leaderboard-screen" class="hidden">
-            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">명예의 전당</h1>
-            <div id="leaderboard-list" class="space-y-2 text-left"></div>
+            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-4">랭킹</h1>
+            <div class="flex justify-center mb-4 border-b border-slate-600">
+                <button id="today-ranking-tab" class="flex-1 pb-2 font-bold transition-colors duration-200">오늘의 랭킹</button>
+                <button id="hof-tab" class="flex-1 pb-2 font-bold transition-colors duration-200">명예의 전당</button>
+            </div>
+
+            <div id="today-ranking-view">
+                <!-- Today's ranking list will be generated here by JS -->
+            </div>
+            <div id="hof-view" class="hidden">
+                 <!-- Hall of Fame podium will be generated here by JS -->
+            </div>
+            
             <button id="leaderboard-home-button" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700">처음으로 돌아가기</button>
         </div>
         
@@ -113,324 +123,380 @@ content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     <script>
         // --- Supabase Setup ---
         const SUPABASE_URL = 'https://pyqiesyvpkuqqirenggq.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5cWllc3l2cGt1cXFpcmVuZ2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNzMxODEsImV4cCI6MjA3MDY0OTE4MX0.y4cWm8Vthf4s2lvu1GozcIWlKMA0o4FbO_HFHoV0uaY';
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5cWllc3l2cGt1cXFpcmVuZ2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNzMxODEsImV4cCI6MjA3MDY0OTE4MX0.y4cWmVthf4s2lvu1GozcIWlKMA0o4FbO_HFHoV0uaY';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// --- DOM Element References ---
-const startScreen = document.getElementById('start-screen');
-const practiceScreen = document.getElementById('practice-screen');
-const departmentScreen = document.getElementById('department-screen');
-const leaderboardScreen = document.getElementById('leaderboard-screen');
-const personalRecordsScreen = document.getElementById('personal-records-screen');
-const visitorCountDisplay = document.getElementById('visitor-count');
-const viewRankingButton = document.getElementById('view-ranking-button');
-const viewPersonalRecordsButton = document.getElementById('view-personal-records-button');
-const departmentSelect = document.getElementById('department-select');
-const departmentSearch = document.getElementById('department-search');
-const submitScoreButton = document.getElementById('submit-score-button');
-const leaderboardList = document.getElementById('leaderboard-list');
-const personalRecordsList = document.getElementById('personal-records-list');
-const leaderboardHomeButton = document.getElementById('leaderboard-home-button');
-const personalRecordsHomeButton = document.getElementById('personal-records-home-button');
-const mode10Button = document.getElementById('mode-10-button');
-const modeInfiniteButton = document.getElementById('mode-infinite-button');
-const roundCounter = document.getElementById('round-counter');
-const numberDisplay = document.getElementById('number-display');
-const inputField = document.getElementById('input-field');
-const submitButton = document.getElementById('submit-button');
-const feedbackDisplay = document.getElementById('feedback-display');
-const wrongAttemptsDisplay = document.getElementById('wrong-attempts-display');
-const infiniteHomeButton = document.getElementById('infinite-home-button');
+        // --- DOM Element References ---
+        const startScreen = document.getElementById('start-screen');
+        const practiceScreen = document.getElementById('practice-screen');
+        const departmentScreen = document.getElementById('department-screen');
+        const leaderboardScreen = document.getElementById('leaderboard-screen');
+        const personalRecordsScreen = document.getElementById('personal-records-screen');
+        const visitorCountDisplay = document.getElementById('visitor-count');
+        const viewRankingButton = document.getElementById('view-ranking-button');
+        const viewPersonalRecordsButton = document.getElementById('view-personal-records-button');
+        const departmentSelect = document.getElementById('department-select');
+        const departmentSearch = document.getElementById('department-search');
+        const submitScoreButton = document.getElementById('submit-score-button');
+        const leaderboardHomeButton = document.getElementById('leaderboard-home-button');
+        const personalRecordsHomeButton = document.getElementById('personal-records-home-button');
+        const mode10Button = document.getElementById('mode-10-button');
+        const modeInfiniteButton = document.getElementById('mode-infinite-button');
+        const roundCounter = document.getElementById('round-counter');
+        const numberDisplay = document.getElementById('number-display');
+        const inputField = document.getElementById('input-field');
+        const submitButton = document.getElementById('submit-button');
+        const feedbackDisplay = document.getElementById('feedback-display');
+        const wrongAttemptsDisplay = document.getElementById('wrong-attempts-display');
+        const infiniteHomeButton = document.getElementById('infinite-home-button');
+        const todayRankingTab = document.getElementById('today-ranking-tab');
+        const hofTab = document.getElementById('hof-tab');
+        const todayRankingView = document.getElementById('today-ranking-view');
+        const hofView = document.getElementById('hof-view');
+        const personalRecordsList = document.getElementById('personal-records-list');
 
-// --- State Variables ---
-let gameMode = null, currentNumber = '', isFirstRound = true;
-let roundLimit = 10, currentRound = 0, correctAnswers = 0, wrongAnswers = 0;
-let timerStart = 0, timeRecords = [];
-let lastGameResult = {};
+        // --- State Variables ---
+        let gameMode = null, currentNumber = '', isFirstRound = true;
+        let roundLimit = 10, currentRound = 0, correctAnswers = 0, wrongAnswers = 0;
+        let timerStart = 0, timeRecords = [];
+        let lastGameResult = {};
 
-// --- Event Listeners ---
-departmentSearch.addEventListener('input', (e) => {
-const searchTerm = e.target.value.toLowerCase();
-const optgroups = departmentSelect.querySelectorAll('optgroup');
-optgroups.forEach(optgroup => {
-const options = optgroup.querySelectorAll('option');
-let groupVisible = false;
-options.forEach(option => {
-const optionText = option.textContent.toLowerCase();
-if (option.value === "" || optionText.includes(searchTerm)) {
-option.style.display = '';
-groupVisible = true;
-} else {
-option.style.display = 'none';
-}
-});
-optgroup.style.display = groupVisible ? '' : 'none';
-});
-});
-
-inputField.addEventListener('paste', (e) => {
-e.preventDefault();
-});
-
-        // --- Core Functions ---
-        
-/**
-         * MODIFIED: Records a new visit and fetches the TOTAL visitor count.
-         * MODIFIED: Add event listener to enable/disable submit button based on department selection.
-*/
-        departmentSelect.addEventListener('change', () => {
-            // The button is enabled only if a department (a non-empty value) is selected.
-            submitScoreButton.disabled = !departmentSelect.value;
+        // --- Event Listeners ---
+        departmentSearch.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const optgroups = departmentSelect.querySelectorAll('optgroup');
+            optgroups.forEach(optgroup => {
+                const options = optgroup.querySelectorAll('option');
+                let groupVisible = false;
+                options.forEach(option => {
+                    const optionText = option.textContent.toLowerCase();
+                    if (option.value === "" || optionText.includes(searchTerm)) {
+                        option.style.display = '';
+                        groupVisible = true;
+                    } else {
+                        option.style.display = 'none';
+                    }
+                });
+                optgroup.style.display = groupVisible ? '' : 'none';
+            });
         });
 
+        inputField.addEventListener('paste', (e) => { e.preventDefault(); });
+        departmentSelect.addEventListener('change', () => { submitScoreButton.disabled = !departmentSelect.value; });
 
         // --- Core Functions ---
+        async function recordAndDisplayVisit() {
+            try {
+                await supabaseClient.from('visitors').insert([{}]);
+                const { count, error } = await supabaseClient
+                    .from('visitors')
+                    .select('*', { count: 'exact', head: true });
+                if (error) throw error;
+                if (visitorCountDisplay) visitorCountDisplay.textContent = count;
+            } catch (error) {
+                console.error('Error recording/fetching visit count:', error);
+                if (visitorCountDisplay) visitorCountDisplay.textContent = '??';
+            }
+        }
         
-async function recordAndDisplayVisit() {
-try {
-                // 1. Insert a new record for this visit.
-                // Note: This increments the count on every page load/reload.
-const { error: insertError } = await supabaseClient.from('visitors').insert([{}]);
-if (insertError) throw insertError;
+        function setActiveTab(activeTab) {
+            if (activeTab === 'today') {
+                todayRankingView.classList.remove('hidden');
+                hofView.classList.add('hidden');
+                todayRankingTab.classList.add('text-amber-400', 'border-b-2', 'border-amber-400');
+                todayRankingTab.classList.remove('text-slate-400');
+                hofTab.classList.add('text-slate-400');
+                hofTab.classList.remove('text-amber-400', 'border-b-2', 'border-amber-400');
+            } else { // 'hof'
+                hofView.classList.remove('hidden');
+                todayRankingView.classList.add('hidden');
+                hofTab.classList.add('text-amber-400', 'border-b-2', 'border-amber-400');
+                hofTab.classList.remove('text-slate-400');
+                todayRankingTab.classList.add('text-slate-400');
+                todayRankingTab.classList.remove('text-amber-400', 'border-b-2', 'border-amber-400');
+            }
+        }
 
-                // 2. Fetch the total count of ALL records in the 'visitors' table.
-                // The date filter has been removed to get the total count.
-const { count, error: countError } = await supabaseClient
-.from('visitors')
-.select('*', { count: 'exact', head: true });
+        async function fetchAndShowLeaderboard() {
+            startScreen.classList.add('hidden');
+            departmentScreen.classList.add('hidden');
+            leaderboardScreen.classList.remove('hidden');
+            
+            setActiveTab('today');
+            todayRankingView.innerHTML = `<div class="text-white text-center">랭킹을 불러오는 중...</div>`;
+            hofView.innerHTML = `<div class="text-white text-center">랭킹을 불러오는 중...</div>`;
 
-if (countError) throw countError;
+            const { data, error } = await supabaseClient
+                .from('leaderboard')
+                .select('department, avg_speed, created_at')
+                .order('created_at', { ascending: false });
 
-                // 3. Display the total count.
-if (visitorCountDisplay) {
-visitorCountDisplay.textContent = count;
-}
+            if (error) {
+                console.error('Error fetching leaderboard:', error);
+                const errorMsg = `<div class="text-red-400 text-center">랭킹을 불러오는 데 실패했습니다.</div>`;
+                todayRankingView.innerHTML = errorMsg;
+                hofView.innerHTML = errorMsg;
+                return;
+            }
+            
+            todayRankingView.innerHTML = '';
+            hofView.innerHTML = '';
 
-} catch (error) {
-console.error('방문자 수 기록/조회 오류:', error);
-if (visitorCountDisplay) {
-visitorCountDisplay.textContent = '??';
-}
-}
-}
+            const recordsByDate = data.reduce((acc, record) => {
+                const date = new Date(record.created_at);
+                date.setHours(date.getHours() + 9);
+                const dateKey = date.toISOString().split('T')[0];
+                if (!acc[dateKey]) acc[dateKey] = [];
+                acc[dateKey].push(record);
+                return acc;
+            }, {});
 
-async function fetchAndShowLeaderboard() {
-departmentScreen.classList.add('hidden');
-startScreen.classList.add('hidden');
-leaderboardScreen.classList.remove('hidden');
-leaderboardList.innerHTML = `<div class="text-white text-center">랭킹을 불러오는 중...</div>`;
+            const now = new Date();
+            now.setHours(now.getHours() + 9);
+            const todayKey = now.toISOString().split('T')[0];
+            const sortedDates = Object.keys(recordsByDate).sort((a, b) => new Date(b) - new Date(a));
 
-const { data, error } = await supabaseClient
-.from('leaderboard')
-.select('department, avg_speed, created_at')
-.order('avg_speed', { ascending: true })
-.limit(8);
+            // --- Populate Today's Ranking ---
+            const todayRecords = recordsByDate[todayKey];
+            if (todayRecords && todayRecords.length > 0) {
+                todayRecords.sort((a, b) => a.avg_speed - b.avg_speed);
+                const list = document.createElement('div');
+                list.className = 'space-y-2 text-left';
+                todayRecords.slice(0, 8).forEach((record, index) => {
+                    const rank = index + 1;
+                    const medal = ['🥇', '🥈', '🥉'][index] || `<span class="text-sm">${rank}위</span>`;
+                    const li = document.createElement('div');
+                    li.className = 'flex items-center justify-between bg-black/30 p-3 rounded-lg text-white text-shadow';
+                    li.innerHTML = `
+                        <div class="flex items-center">
+                            <span class="font-bold text-xl w-12 text-left">${medal}</span>
+                            <span class="font-semibold">${record.department}</span>
+                        </div>
+                        <span class="font-digital font-bold text-amber-400">${record.avg_speed.toFixed(4)}초</span>`;
+                    list.appendChild(li);
+                });
+                todayRankingView.appendChild(list);
+            } else {
+                todayRankingView.innerHTML = `<div class="text-white text-center mt-4">오늘 등록된 기록이 없습니다.</div>`;
+            }
 
-if (error) {
-console.error('Error fetching leaderboard:', error);
-leaderboardList.innerHTML = `<div class="text-red-400 text-center">랭킹을 불러오는 데 실패했습니다.</div>`;
-return;
-}
+            // --- Populate Hall of Fame ---
+            const allTimeWinners = [];
+            sortedDates.forEach(dateKey => {
+                if (dateKey !== todayKey) {
+                    const winner = recordsByDate[dateKey].sort((a, b) => a.avg_speed - b.avg_speed)[0];
+                    if (winner) {
+                        allTimeWinners.push({ ...winner, date: dateKey });
+                    }
+                }
+            });
 
-leaderboardList.innerHTML = '';
-data.forEach((record, index) => {
-const rank = index + 1;
-const medal = ['🥇', '🥈', '🥉'][index] || `<span class="text-sm">${rank}위</span>`;
-const date = new Date(record.created_at);
-const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-const li = document.createElement('li');
-li.className = 'flex items-center justify-between bg-black/30 p-3 rounded-lg text-white text-shadow';
-li.innerHTML = `
-<div class="flex items-center">
-<span class="font-bold text-xl w-12 text-left">${medal}</span>
-<div>
-<span class="font-semibold">${record.department}</span>
-<span class="block text-xs text-gray-300">${formattedDate}</span>
-</div>
-</div>
-<span class="font-digital font-bold text-amber-400">${record.avg_speed.toFixed(4)}초</span>`;
-leaderboardList.appendChild(li);
-});
-}
+            if (allTimeWinners.length > 0) {
+                allTimeWinners.sort((a, b) => a.avg_speed - b.avg_speed);
+                const topThree = allTimeWinners.slice(0, 3);
 
-function showPersonalRecords() {
-startScreen.classList.add('hidden');
-personalRecordsScreen.classList.remove('hidden');
+                const podium = document.createElement('div');
+                podium.className = 'flex items-end justify-center gap-2 text-white text-shadow mt-6';
+                
+                const places = [
+                    topThree.find((_, i) => i === 1), // 2nd place
+                    topThree.find((_, i) => i === 0), // 1st place
+                    topThree.find((_, i) => i === 2)  // 3rd place
+                ];
 
-const records = JSON.parse(localStorage.getItem('personalBests')) || [];
-personalRecordsList.innerHTML = '';
+                const podiumConfig = [
+                    { rank: 2, medal: '🥈', height: 'h-32', bgColor: 'bg-slate-600/50', order: 'order-1 sm:order-1' },
+                    { rank: 1, medal: '🥇', height: 'h-40', bgColor: 'bg-amber-600/50', order: 'order-2 sm:order-2' },
+                    { rank: 3, medal: '🥉', height: 'h-24', bgColor: 'bg-orange-800/50', order: 'order-3 sm:order-3' }
+                ];
 
-if (records.length === 0) {
-personalRecordsList.innerHTML = `<div class="text-white text-center">아직 저장된 기록이 없습니다.<br>'10개 모드'를 플레이하고 기록을 저장해보세요!</div>`;
-return;
-}
+                podiumConfig.forEach(config => {
+                    const winner = places[config.rank - 1];
+                    const podiumStep = document.createElement('div');
+                    podiumStep.className = `flex flex-col justify-center items-center p-2 rounded-t-lg w-1/3 ${config.height} ${config.order} ${winner ? config.bgColor : 'bg-gray-700/30'}`;
+                    
+                    if (winner) {
+                        podiumStep.innerHTML = `
+                            <span class="text-3xl font-bold">${config.medal}</span>
+                            <span class="font-semibold text-center break-words w-full">${winner.department}</span>
+                            <span class="font-digital text-amber-300">${winner.avg_speed.toFixed(4)}s</span>
+                            <span class="text-xs text-gray-400">${winner.date}</span>
+                        `;
+                    } else {
+                         podiumStep.innerHTML = `<span class="text-gray-400 text-2xl font-bold">?</span>`;
+                    }
+                    podium.appendChild(podiumStep);
+                });
+                hofView.appendChild(podium);
 
-const sortedRecords = [...records].sort((a, b) => a.speed - b.speed);
-const bestSpeed = sortedRecords[0].speed;
+            } else {
+                hofView.innerHTML = `<div class="text-white text-center mt-4">아직 명예의 전당에 등록된 기록이 없습니다.</div>`;
+            }
+        }
 
-records.sort((a, b) => new Date(b.date) - new Date(a.date));
+        function showPersonalRecords() {
+            startScreen.classList.add('hidden');
+            personalRecordsScreen.classList.remove('hidden');
 
-records.forEach(record => {
-const isBest = record.speed === bestSpeed;
-const medal = isBest ? '👑' : '•';
-const textColor = isBest ? 'text-amber-400' : 'text-white';
+            const records = JSON.parse(localStorage.getItem('personalBests')) || [];
+            personalRecordsList.innerHTML = '';
 
-const date = new Date(record.date);
-const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+            if (records.length === 0) {
+                personalRecordsList.innerHTML = `<div class="text-white text-center">아직 저장된 기록이 없습니다.<br>'10개 모드'를 플레이하고 기록을 저장해보세요!</div>`;
+                return;
+            }
 
-const li = document.createElement('li');
-li.className = `flex items-center justify-between bg-black/30 p-3 rounded-lg text-shadow ${textColor}`;
-li.innerHTML = `
-<div class="flex items-center">
-<span class="font-bold text-xl w-8 text-center">${medal}</span>
-<div class="text-left">
-<span class="font-digital font-bold">${record.speed.toFixed(4)}초</span>
-<span class="block text-xs text-gray-300">${formattedDate}</span>
-</div>
-</div>`;
-personalRecordsList.appendChild(li);
-});
-}
+            const sortedRecords = [...records].sort((a, b) => a.speed - b.speed);
+            const bestSpeed = sortedRecords[0].speed;
+            records.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        /**
-         * MODIFIED: The submit button is now disabled by default when this screen appears.
-         */
-function showResults() {
-practiceScreen.classList.add('hidden');
+            records.forEach(record => {
+                const isBest = record.speed === bestSpeed;
+                const medal = isBest ? '👑' : '•';
+                const textColor = isBest ? 'text-amber-400' : 'text-white';
+                const date = new Date(record.date);
+                const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                const li = document.createElement('li');
+                li.className = `flex items-center justify-between bg-black/30 p-3 rounded-lg text-shadow ${textColor}`;
+                li.innerHTML = `
+                    <div class="flex items-center">
+                        <span class="font-bold text-xl w-8 text-center">${medal}</span>
+                        <div class="text-left">
+                            <span class="font-digital font-bold">${record.speed.toFixed(4)}초</span>
+                            <span class="block text-xs text-gray-300">${formattedDate}</span>
+                        </div>
+                    </div>`;
+                personalRecordsList.appendChild(li);
+            });
+        }
 
-let avgSpeed = 0;
-if (timeRecords.length > 0) {
-const totalTime = timeRecords.reduce((sum, time) => sum + time, 0);
-avgSpeed = (totalTime / timeRecords.length);
-}
-lastGameResult = { avgSpeed: avgSpeed };
+        function showResults() {
+            practiceScreen.classList.add('hidden');
+            let avgSpeed = 0;
+            if (timeRecords.length > 0) {
+                avgSpeed = timeRecords.reduce((a, b) => a + b, 0) / timeRecords.length;
+            }
+            lastGameResult = { avgSpeed };
 
-if (avgSpeed > 0) {
-const personalBests = JSON.parse(localStorage.getItem('personalBests')) || [];
-personalBests.push({ speed: avgSpeed, date: new Date().toISOString() });
-localStorage.setItem('personalBests', JSON.stringify(personalBests));
-}
+            if (avgSpeed > 0) {
+                const personalBests = JSON.parse(localStorage.getItem('personalBests')) || [];
+                personalBests.push({ speed: avgSpeed, date: new Date().toISOString() });
+                localStorage.setItem('personalBests', JSON.stringify(personalBests));
+            }
 
-departmentScreen.classList.remove('hidden');
-            submitScoreButton.disabled = true; // Button is disabled initially
-departmentSelect.value = '';
-departmentSearch.value = '';
-departmentSearch.dispatchEvent(new Event('input')); 
-departmentSelect.focus();
-}
+            departmentScreen.classList.remove('hidden');
+            submitScoreButton.disabled = true;
+            departmentSelect.value = '';
+            departmentSearch.value = '';
+            departmentSearch.dispatchEvent(new Event('input')); 
+            departmentSelect.focus();
+        }
 
-async function submitScoreAndShowLeaderboard() {
-const department = departmentSelect.value;
-            // Safeguard check, though the button should be disabled if department is not selected.
-if (!department) {
-                // Using a custom modal/alert would be better, but for now, standard alert.
+        async function submitScoreAndShowLeaderboard() {
+            const department = departmentSelect.value;
+            if (!department) {
                 const feedback = document.createElement('div');
                 feedback.textContent = '학과를 선택해주세요!';
                 feedback.className = 'fixed top-5 left-1/2 -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg';
                 document.body.appendChild(feedback);
                 setTimeout(() => document.body.removeChild(feedback), 2000);
-                console.error("Submit called with no department selected.");
-return;
-}
+                return;
+            }
 
-if (lastGameResult.avgSpeed) {
-submitScoreButton.disabled = true;
-submitScoreButton.textContent = '등록 중...';
-await supabaseClient.from('leaderboard').insert([
-{ department: department, avg_speed: lastGameResult.avgSpeed }
-]);
-submitScoreButton.disabled = false;
-submitScoreButton.textContent = '기록 제출 및 랭킹 보기';
-}
-fetchAndShowLeaderboard();
-}
+            if (lastGameResult.avgSpeed) {
+                submitScoreButton.disabled = true;
+                submitScoreButton.textContent = '등록 중...';
+                await supabaseClient.from('leaderboard').insert([
+                    { department: department, avg_speed: lastGameResult.avgSpeed }
+                ]);
+                submitScoreButton.disabled = false;
+                submitScoreButton.textContent = '기록 제출 및 랭킹 보기';
+            }
+            fetchAndShowLeaderboard();
+        }
 
-function startGame(mode) {
-gameMode = mode; isFirstRound = true; currentRound = 0;
-correctAnswers = 0; wrongAnswers = 0; timeRecords = [];
-startScreen.classList.add('hidden');
-practiceScreen.classList.remove('hidden');
-if (mode === 'infinite') infiniteHomeButton.classList.remove('hidden');
-else infiniteHomeButton.classList.add('hidden');
-wrongAttemptsDisplay.textContent = `틀린 횟수: 0`;
-startNewRound();
-}
+        function startGame(mode) {
+            gameMode = mode; isFirstRound = true; currentRound = 0;
+            correctAnswers = 0; wrongAnswers = 0; timeRecords = [];
+            startScreen.classList.add('hidden');
+            practiceScreen.classList.remove('hidden');
+            if (mode === 'infinite') infiniteHomeButton.classList.remove('hidden');
+            else infiniteHomeButton.classList.add('hidden');
+            wrongAttemptsDisplay.textContent = `틀린 횟수: 0`;
+            startNewRound();
+        }
 
-function startNewRound() {
-if (gameMode === '10rounds' && currentRound >= roundLimit) { showResults(); return; }
-currentRound++;
-roundCounter.textContent = gameMode === '10rounds' ? `${currentRound} / ${roundLimit}` : `라운드 ${currentRound}`;
-inputField.disabled = true; submitButton.disabled = true;
-inputField.value = ''; feedbackDisplay.textContent = '';
-countdown(isFirstRound ? 3 : 1);
-isFirstRound = false;
-}
+        function startNewRound() {
+            if (gameMode === '10rounds' && currentRound >= roundLimit) { showResults(); return; }
+            currentRound++;
+            roundCounter.textContent = gameMode === '10rounds' ? `${currentRound} / ${roundLimit}` : `라운드 ${currentRound}`;
+            inputField.disabled = true; submitButton.disabled = true;
+            inputField.value = ''; feedbackDisplay.textContent = '';
+            countdown(isFirstRound ? 3 : 1);
+            isFirstRound = false;
+        }
 
-function countdown(seconds) {
-if (seconds > 0) {
-numberDisplay.textContent = seconds; numberDisplay.style.color = 'white';
-setTimeout(() => countdown(seconds - 1), 1000);
-} else {
-currentNumber = generateRandomNumber();
-numberDisplay.textContent = currentNumber; numberDisplay.style.color = '#FBBF24';
-inputField.disabled = false; submitButton.disabled = false;
-inputField.focus(); timerStart = Date.now();
-}
-}
+        function countdown(seconds) {
+            if (seconds > 0) {
+                numberDisplay.textContent = seconds; numberDisplay.style.color = 'white';
+                setTimeout(() => countdown(seconds - 1), 1000);
+            } else {
+                currentNumber = generateRandomNumber();
+                numberDisplay.textContent = currentNumber; numberDisplay.style.color = '#FBBF24';
+                inputField.disabled = false; submitButton.disabled = false;
+                inputField.focus(); timerStart = Date.now();
+            }
+        }
 
-function generateRandomNumber() {
-const firstDigit = Math.floor(Math.random() * 9) + 1;
-let otherDigits = '';
-for (let i = 0; i < 3; i++) { otherDigits += Math.floor(Math.random() * 10); }
-return `${firstDigit}${otherDigits}`;
-}
+        function generateRandomNumber() {
+            return String(Math.floor(Math.random() * 9000) + 1000);
+        }
 
-function checkAnswer() {
-if (inputField.disabled) return;
-const userInput = inputField.value;
-if (userInput === currentNumber) {
-const timeTaken = (Date.now() - timerStart) / 1000;
-if (gameMode === '10rounds') {
-timeRecords.push(timeTaken);
-}
-correctAnswers++;
-feedbackDisplay.textContent = `정답! (${timeTaken.toFixed(4)}초)`;
-feedbackDisplay.style.color = '#10B981';
-inputField.disabled = true; submitButton.disabled = true;
-setTimeout(startNewRound, 500);
-} else {
-wrongAnswers++;
-wrongAttemptsDisplay.textContent = `틀린 횟수: ${wrongAnswers}`;
-feedbackDisplay.textContent = '다시'; feedbackDisplay.style.color = '#EF4444';
-inputField.value = '';
-inputField.classList.add('animate-bounce');
-setTimeout(() => inputField.classList.remove('animate-bounce'), 500);
-}
-}
+        function checkAnswer() {
+            if (inputField.disabled) return;
+            const userInput = inputField.value;
+            if (userInput === currentNumber) {
+                const timeTaken = (Date.now() - timerStart) / 1000;
+                if (gameMode === '10rounds') timeRecords.push(timeTaken);
+                correctAnswers++;
+                feedbackDisplay.textContent = `정답! (${timeTaken.toFixed(4)}초)`;
+                feedbackDisplay.style.color = '#10B981';
+                inputField.disabled = true; submitButton.disabled = true;
+                setTimeout(startNewRound, 500);
+            } else {
+                wrongAnswers++;
+                wrongAttemptsDisplay.textContent = `틀린 횟수: ${wrongAnswers}`;
+                feedbackDisplay.textContent = '다시'; feedbackDisplay.style.color = '#EF4444';
+                inputField.value = '';
+                inputField.classList.add('animate-bounce');
+                setTimeout(() => inputField.classList.remove('animate-bounce'), 500);
+            }
+        }
 
-function goToHome() {
-departmentScreen.classList.add('hidden');
-leaderboardScreen.classList.add('hidden');
-practiceScreen.classList.add('hidden');
-personalRecordsScreen.classList.add('hidden');
-startScreen.classList.remove('hidden');
-}
+        function goToHome() {
+            departmentScreen.classList.add('hidden');
+            leaderboardScreen.classList.add('hidden');
+            practiceScreen.classList.add('hidden');
+            personalRecordsScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
 
-// --- Initialize App ---
-document.addEventListener('DOMContentLoaded', recordAndDisplayVisit);
-mode10Button.addEventListener('click', () => startGame('10rounds'));
-modeInfiniteButton.addEventListener('click', () => startGame('infinite'));
-viewRankingButton.addEventListener('click', fetchAndShowLeaderboard);
-viewPersonalRecordsButton.addEventListener('click', showPersonalRecords);
-submitScoreButton.addEventListener('click', submitScoreAndShowLeaderboard);
-leaderboardHomeButton.addEventListener('click', goToHome);
-personalRecordsHomeButton.addEventListener('click', goToHome);
-infiniteHomeButton.addEventListener('click', goToHome);
-submitButton.addEventListener('click', checkAnswer);
-inputField.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); });
-inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !inputField.disabled) checkAnswer(); });
-</script>
+        // --- Initialize App ---
+        document.addEventListener('DOMContentLoaded', recordAndDisplayVisit);
+        mode10Button.addEventListener('click', () => startGame('10rounds'));
+        modeInfiniteButton.addEventListener('click', () => startGame('infinite'));
+        viewRankingButton.addEventListener('click', fetchAndShowLeaderboard);
+        viewPersonalRecordsButton.addEventListener('click', showPersonalRecords);
+        submitScoreButton.addEventListener('click', submitScoreAndShowLeaderboard);
+        leaderboardHomeButton.addEventListener('click', goToHome);
+        personalRecordsHomeButton.addEventListener('click', goToHome);
+        infiniteHomeButton.addEventListener('click', goToHome);
+        submitButton.addEventListener('click', checkAnswer);
+        inputField.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); });
+        inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !inputField.disabled) checkAnswer(); });
+        
+        todayRankingTab.addEventListener('click', () => setActiveTab('today'));
+        hofTab.addEventListener('click', () => setActiveTab('hof'));
+    </script>
 </body>
 </html>
-
-
