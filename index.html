@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>수강신청 매크로 방지 연습</title>
-    <!-- Supabase JS Library -->
+<!-- Supabase JS Library -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Tailwind CSS CDN -->
+<!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
+<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
@@ -21,173 +21,100 @@ background-blend-mode: overlay;
 }
 body::before {
 content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-background-image: url('./images.jpeg');
-background-size: cover; background-position: center;
-filter: blur(4px); z-index: -1;
-}
-.font-digital { font-family: 'Roboto Mono', monospace; }
-.text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
-/* Make the dropdown scrollable */
-#department-select {
-max-height: 200px;
-overflow-y: auto;
-}
-</style>
+            background-image: url('./images.jpeg');
+            background-size: cover; background-position: center;
+            filter: blur(4px); z-index: -1;
+        }
+        .font-digital { font-family: 'Roboto Mono', monospace; }
+        .text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+        /* Make the dropdown scrollable */
+        #department-select {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
 
-<div id="app-container" class="w-full max-w-md mx-auto p-6 sm:p-8 text-center transition-all duration-300">
+    <div id="app-container" class="w-full max-w-md mx-auto p-6 sm:p-8 text-center transition-all duration-300">
 
         <!-- Start Screen -->
-<div id="start-screen">
-<h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-2">수강신청 연습</h1>
-<p class="text-white text-shadow mb-8">모드를 선택하세요!</p>
-<div class="space-y-4">
-<button id="mode-10-button" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-indigo-700">10개 모드</button>
-<button id="mode-infinite-button" class="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-teal-700">무한 모드</button>
-<button id="view-ranking-button" class="w-full bg-amber-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-amber-700">랭킹 보기</button>
-</div>
-<div class="mt-8 text-white text-shadow">오늘의 방문자: <span id="visitor-count" class="font-bold">...</span>명</div>
-</div>
+        <div id="start-screen">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-2">수강신청 연습</h1>
+            <p class="text-white text-shadow mb-8">모드를 선택하세요!</p>
+            <div class="space-y-4">
+                <button id="mode-10-button" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-indigo-700">10개 모드</button>
+                <button id="mode-infinite-button" class="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-teal-700">무한 모드</button>
+                <button id="view-ranking-button" class="w-full bg-amber-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-amber-700">랭킹 보기</button>
+                <button id="view-personal-records-button" class="w-full bg-sky-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-sky-700">개인 기록 보기</button>
+            </div>
+            <div class="mt-8 text-white text-shadow">총 방문자: <span id="visitor-count" class="font-bold">...</span>명</div>
+        </div>
 
         <!-- Practice Screen (hidden) -->
-<div id="practice-screen" class="hidden relative">
-<button id="infinite-home-button" class="hidden absolute top-0 left-0 text-white bg-slate-600/50 hover:bg-slate-700/70 rounded-full p-2 m-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></button>
-<div id="wrong-attempts-display" class="absolute top-0 right-0 text-red-500 font-bold text-lg text-shadow m-2 p-2"></div>
-<div id="round-counter" class="text-white text-shadow font-bold text-lg mb-4 h-6"></div>
-<div id="number-display" class="font-digital text-6xl sm:text-8xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center"></div>
-<div class="flex items-stretch justify-center space-x-2">
-                <!-- MODIFIED: Changed type to "text" and added inputmode="numeric" for a true number pad -->
-                <input type="text" pattern="[0-9]*" id="input-field" class="flex-grow w-2/3 text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md" placeholder="####" maxlength="4" disabled>
+        <div id="practice-screen" class="hidden relative">
+            <button id="infinite-home-button" class="hidden absolute top-0 left-0 text-white bg-slate-600/50 hover:bg-slate-700/70 rounded-full p-2 m-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></button>
+            <div id="wrong-attempts-display" class="absolute top-0 right-0 text-red-500 font-bold text-lg text-shadow m-2 p-2"></div>
+            <div id="round-counter" class="text-white text-shadow font-bold text-lg mb-4 h-6"></div>
+            <div id="number-display" class="font-digital text-6xl sm:text-8xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center"></div>
+            <div class="flex items-stretch justify-center space-x-2">
                 <input type="text" id="input-field" class="flex-grow w-2/3 text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md" placeholder="####" maxlength="4" disabled>
-<button id="submit-button" class="w-1/3 bg-green-600 text-white font-bold rounded-lg shadow-lg" disabled>확인</button>
-</div>
-<div id="feedback-display" class="mt-4 h-6 text-xl font-bold text-shadow"></div>
-</div>
+                <button id="submit-button" class="w-1/3 bg-green-600 text-white font-bold rounded-lg shadow-lg" disabled>확인</button>
+            </div>
+            <div id="feedback-display" class="mt-4 h-6 text-xl font-bold text-shadow"></div>
+        </div>
 
         <!-- Department Input Screen (hidden) -->
-<div id="department-screen" class="hidden">
-<h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">기록 등록</h1>
-<p class="text-white text-shadow mb-4">랭킹에 표시될 학과를 선택하세요.</p>
-
-<div class="relative mb-2">
-<input type="text" id="department-search" class="w-full text-lg p-3 pl-10 border-2 border-slate-300 rounded-lg shadow-md bg-white" placeholder="학과 검색...">
-<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-<svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-</div>
-</div>
-
-<select id="department-select" class="w-full text-center text-lg p-3 border-2 border-slate-300 rounded-lg shadow-md bg-white" size="5">
-<option value="">-- 학과를 선택하세요 --</option>
-<optgroup label="융합자유전공대학">
-<option value="자유전공학부">자유전공학부</option>
-</optgroup>
-<optgroup label="인문대학">
-<option value="국어국문학과">국어국문학과</option>
-<option value="영어영문학과">영어영문학과</option>
-<option value="독어독문학과">독어독문학과</option>
-<option value="불어불문학과">불어불문학과</option>
-<option value="일본지역문화학과">일본지역문화학과</option>
-<option value="중어중국학과">중어중국학과</option>
-</optgroup>
-<optgroup label="자연과학대학">
-<option value="수학과">수학과</option>
-<option value="물리학과">물리학과</option>
-<option value="화학과">화학과</option>
-<option value="패션산업학과">패션산업학과</option>
-<option value="해양학과">해양학과</option>
-</optgroup>
-<optgroup label="사회과학대학">
-<option value="사회복지학과">사회복지학과</option>
-<option value="미디어커뮤니케이션학과">미디어커뮤니케이션학과</option>
-<option value="문헌정보학과">문헌정보학과</option>
-<option value="창의인재개발학과">창의인재개발학과</option>
-</optgroup>
-<optgroup label="글로벌정경대학">
-<option value="행정학과">행정학과</option>
-<option value="정치외교학과">정치외교학과</option>
-<option value="경제학과">경제학과</option>
-<option value="Global Trade & Service학부">Global Trade & Service학부</option>
-<option value="소비자학과">소비자학과</option>
-</optgroup>
-<optgroup label="공과대학">
-<option value="기계공학과">기계공학과</option>
-<option value="전기공학과">전기공학과</option>
-<option value="전자공학부">전자공학부</option>
-<option value="산업경영공학과">산업경영공학과</option>
-<option value="신소재공학과">신소재공학과</option>
-<option value="안전공학과">안전공학과</option>
-<option value="에너지화학공학과">에너지화학공학과</option>
-<option value="바이오-로봇시스템공학과">바이오-로봇시스템공학과</option>
-</optgroup>
-<optgroup label="정보기술대학">
-<option value="컴퓨터공학부">컴퓨터공학부</option>
-<option value="정보통신공학과">정보통신공학과</option>
-<option value="임베디드시스템공학과">임베디드시스템공학과</option>
-</optgroup>
-<optgroup label="경영대학">
-<option value="경영학부">경영학부</option>
-<option value="데이터과학과">데이터과학과</option>
-<option value="세무회계학과">세무회계학과</option>
-</optgroup>
-<optgroup label="예술체육대학">
-<option value="조형예술학부(한국화)">조형예술학부(한국화)</option>
-<option value="조형예술학부(서양화)">조형예술학부(서양화)</option>
-<option value="디자인학부">디자인학부</option>
-<option value="공연예술학과">공연예술학과</option>
-<option value="스포츠과학과">스포츠과학과</option>
-<option value="운동건강학부">운동건강학부</option>
-</optgroup>
-<optgroup label="사범대학">
-<option value="국어교육과">국어교육과</option>
-<option value="영어교육과">영어교육과</option>
-<option value="일어교육과">일어교육과</option>
-<option value="수학교육과">수학교육과</option>
-<option value="체육교육과">체육교육과</option>
-<option value="유아교육과">유아교육과</option>
-<option value="역사교육과">역사교육과</option>
-<option value="윤리교육과">윤리교육과</option>
-</optgroup>
-<optgroup label="도시과학대학">
-<option value="도시행정학과">도시행정학과</option>
-<option value="도시환경공학부(건설환경)">도시환경공학부(건설환경)</option>
-<option value="도시환경공학부(환경공학)">도시환경공학부(환경공학)</option>
-<option value="도시공학과">도시공학과</option>
-<option value="도시건축학부">도시건축학부</option>
-</optgroup>
-<optgroup label="생명과학기술대학">
-<option value="생명과학부(생명과학)">생명과학부(생명과학)</option>
-<option value="생명과학부(분자의생명)">생명과학부(분자의생명)</option>
-<option value="생명공학부(생명공학)">생명공학부(생명공학)</option>
-<option value="생명공학부(나노바이오)">생명공학부(나노바이오)</option>
-</optgroup>
-<optgroup label="동북아국제통상물류학부">
-<option value="동북아국제통상전공">동북아국제통상전공</option>
-<option value="스마트물류공학전공">스마트물류공학전공</option>
-</optgroup>
-<optgroup label="법학부">
-<option value="법학부">법학부</option>
-</optgroup>
-</select>
-<button id="submit-score-button" class="w-full mt-4 bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-green-700">기록 제출 및 랭킹 보기</button>
-</div>
+        <div id="department-screen" class="hidden">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">기록 등록</h1>
+            <p class="text-white text-shadow mb-4">랭킹에 표시될 학과를 선택하세요.</p>
+            <div class="relative mb-2">
+                <input type="text" id="department-search" class="w-full text-lg p-3 pl-10 border-2 border-slate-300 rounded-lg shadow-md bg-white" placeholder="학과 검색...">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+            </div>
+            <select id="department-select" class="w-full text-center text-lg p-3 border-2 border-slate-300 rounded-lg shadow-md bg-white" size="5">
+                 <option value="">-- 학과를 선택하세요 --</option>
+                 <optgroup label="융합자유전공대학"><option value="자유전공학부">자유전공학부</option></optgroup>
+                 <optgroup label="인문대학"><option value="국어국문학과">국어국문학과</option><option value="영어영문학과">영어영문학과</option><option value="독어독문학과">독어독문학과</option><option value="불어불문학과">불어불문학과</option><option value="일본지역문화학과">일본지역문화학과</option><option value="중어중국학과">중어중국학과</option></optgroup>
+                 <optgroup label="자연과학대학"><option value="수학과">수학과</option><option value="물리학과">물리학과</option><option value="화학과">화학과</option><option value="패션산업학과">패션산업학과</option><option value="해양학과">해양학과</option></optgroup>
+                 <optgroup label="사회과학대학"><option value="사회복지학과">사회복지학과</option><option value="미디어커뮤니케이션학과">미디어커뮤니케이션학과</option><option value="문헌정보학과">문헌정보학과</option><option value="창의인재개발학과">창의인재개발학과</option></optgroup>
+                 <optgroup label="글로벌정경대학"><option value="행정학과">행정학과</option><option value="정치외교학과">정치외교학과</option><option value="경제학과">경제학과</option><option value="Global Trade & Service학부">Global Trade & Service학부</option><option value="소비자학과">소비자학과</option></optgroup>
+                 <optgroup label="공과대학"><option value="기계공학과">기계공학과</option><option value="전기공학과">전기공학과</option><option value="전자공학부">전자공학부</option><option value="산업경영공학과">산업경영공학과</option><option value="신소재공학과">신소재공학과</option><option value="안전공학과">안전공학과</option><option value="에너지화학공학과">에너지화학공학과</option><option value="바이오-로봇시스템공학과">바이오-로봇시스템공학과</option></optgroup>
+                 <optgroup label="정보기술대학"><option value="컴퓨터공학부">컴퓨터공학부</option><option value="정보통신공학과">정보통신공학과</option><option value="임베디드시스템공학과">임베디드시스템공학과</option></optgroup>
+                 <optgroup label="경영대학"><option value="경영학부">경영학부</option><option value="데이터과학과">데이터과학과</option><option value="세무회계학과">세무회계학과</option></optgroup>
+                 <optgroup label="예술체육대학"><option value="조형예술학부(한국화)">조형예술학부(한국화)</option><option value="조형예술학부(서양화)">조형예술학부(서양화)</option><option value="디자인학부">디자인학부</option><option value="공연예술학과">공연예술학과</option><option value="스포츠과학과">스포츠과학과</option><option value="운동건강학부">운동건강학부</option></optgroup>
+                 <optgroup label="사범대학"><option value="국어교육과">국어교육과</option><option value="영어교육과">영어교육과</option><option value="일어교육과">일어교육과</option><option value="수학교육과">수학교육과</option><option value="체육교육과">체육교육과</option><option value="유아교육과">유아교육과</option><option value="역사교육과">역사교육과</option><option value="윤리교육과">윤리교육과</option></optgroup>
+                 <optgroup label="도시과학대학"><option value="도시행정학과">도시행정학과</option><option value="도시환경공학부(건설환경)">도시환경공학부(건설환경)</option><option value="도시환경공학부(환경공학)">도시환경공학부(환경공학)</option><option value="도시공학과">도시공학과</option><option value="도시건축학부">도시건축학부</option></optgroup>
+                 <optgroup label="생명과학기술대학"><option value="생명과학부(생명과학)">생명과학부(생명과학)</option><option value="생명과학부(분자의생명)">생명과학부(분자의생명)</option><option value="생명공학부(생명공학)">생명공학부(생명공학)</option><option value="생명공학부(나노바이오)">생명공학부(나노바이오)</option></optgroup>
+                 <optgroup label="동북아국제통상물류학부"><option value="동북아국제통상전공">동북아국제통상전공</option><option value="스마트물류공학전공">스마트물류공학전공</option></optgroup>
+                 <optgroup label="법학부"><option value="법학부">법학부</option></optgroup>
+            </select>
+            <button id="submit-score-button" class="w-full mt-4 bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-green-700">기록 제출 및 랭킹 보기</button>
+        </div>
 
         <!-- Leaderboard Screen (hidden) -->
-<div id="leaderboard-screen" class="hidden">
-<h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">명예의 전당</h1>
-<div id="leaderboard-list" class="space-y-2 text-left">
-                <!-- Rankings will be inserted here by JavaScript -->
-            </div>
-                </div>
-<button id="leaderboard-home-button" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700">처음으로 돌아가기</button>
-</div>
+        <div id="leaderboard-screen" class="hidden">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">명예의 전당</h1>
+            <div id="leaderboard-list" class="space-y-2 text-left"></div>
+            <button id="leaderboard-home-button" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700">처음으로 돌아가기</button>
+        </div>
+        
+        <!-- Personal Records Screen (hidden) -->
+        <div id="personal-records-screen" class="hidden">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">개인 기록</h1>
+            <div id="personal-records-list" class="space-y-2 text-left"></div>
+            <button id="personal-records-home-button" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700">처음으로 돌아가기</button>
+        </div>
 
-</div>
+    </div>
 
-<script>
-// --- Supabase Setup ---
-const SUPABASE_URL = 'https://pyqiesyvpkuqqirenggq.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5cWllc3l2cGt1cXFpcmVuZ2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNzMxODEsImV4cCI6MjA3MDY0OTE4MX0.y4cWm8Vthf4s2lvu1GozcIWlKMA0o4FbO_HFHoV0uaY';
+    <script>
+        // --- Supabase Setup ---
+        const SUPABASE_URL = 'https://pyqiesyvpkuqqirenggq.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5cWllc3l2cGt1cXFpcmVuZ2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNzMxODEsImV4cCI6MjA3MDY0OTE4MX0.y4cWm8Vthf4s2lvu1GozcIWlKMA0o4FbO_HFHoV0uaY';
+            background-image: url('data:image/jpeg;base64,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_HFHoV0uaY');
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // --- DOM Element References ---
@@ -195,13 +122,17 @@ const startScreen = document.getElementById('start-screen');
 const practiceScreen = document.getElementById('practice-screen');
 const departmentScreen = document.getElementById('department-screen');
 const leaderboardScreen = document.getElementById('leaderboard-screen');
+const personalRecordsScreen = document.getElementById('personal-records-screen');
 const visitorCountDisplay = document.getElementById('visitor-count');
 const viewRankingButton = document.getElementById('view-ranking-button');
+const viewPersonalRecordsButton = document.getElementById('view-personal-records-button');
 const departmentSelect = document.getElementById('department-select');
 const departmentSearch = document.getElementById('department-search');
 const submitScoreButton = document.getElementById('submit-score-button');
 const leaderboardList = document.getElementById('leaderboard-list');
+const personalRecordsList = document.getElementById('personal-records-list');
 const leaderboardHomeButton = document.getElementById('leaderboard-home-button');
+const personalRecordsHomeButton = document.getElementById('personal-records-home-button');
 const mode10Button = document.getElementById('mode-10-button');
 const modeInfiniteButton = document.getElementById('mode-infinite-button');
 const roundCounter = document.getElementById('round-counter');
@@ -222,13 +153,12 @@ let lastGameResult = {};
 departmentSearch.addEventListener('input', (e) => {
 const searchTerm = e.target.value.toLowerCase();
 const optgroups = departmentSelect.querySelectorAll('optgroup');
-
 optgroups.forEach(optgroup => {
 const options = optgroup.querySelectorAll('option');
 let groupVisible = false;
 options.forEach(option => {
 const optionText = option.textContent.toLowerCase();
-if (option.value === "" || optionText.includes(searchTerm)) { // Always show the placeholder
+if (option.value === "" || optionText.includes(searchTerm)) {
 option.style.display = '';
 groupVisible = true;
 } else {
@@ -243,9 +173,48 @@ inputField.addEventListener('paste', (e) => {
 e.preventDefault();
 });
 
-// --- Supabase Functions ---
-async function recordAndDisplayVisit() { /* ... (same as before) ... */ }
-async function submitScoreAndShowLeaderboard() { /* ... (same as before) ... */ }
+        // --- Core Functions ---
+        
+/**
+         * MODIFIED: Records a new visit and fetches the TOTAL visitor count.
+         * MODIFIED: Add event listener to enable/disable submit button based on department selection.
+*/
+        departmentSelect.addEventListener('change', () => {
+            // The button is enabled only if a department (a non-empty value) is selected.
+            submitScoreButton.disabled = !departmentSelect.value;
+        });
+
+
+        // --- Core Functions ---
+        
+async function recordAndDisplayVisit() {
+try {
+                // 1. Insert a new record for this visit.
+                // Note: This increments the count on every page load/reload.
+const { error: insertError } = await supabaseClient.from('visitors').insert([{}]);
+if (insertError) throw insertError;
+
+                // 2. Fetch the total count of ALL records in the 'visitors' table.
+                // The date filter has been removed to get the total count.
+const { count, error: countError } = await supabaseClient
+.from('visitors')
+.select('*', { count: 'exact', head: true });
+
+if (countError) throw countError;
+
+                // 3. Display the total count.
+if (visitorCountDisplay) {
+visitorCountDisplay.textContent = count;
+}
+
+} catch (error) {
+console.error('방문자 수 기록/조회 오류:', error);
+if (visitorCountDisplay) {
+visitorCountDisplay.textContent = '??';
+}
+}
+}
+
 async function fetchAndShowLeaderboard() {
 departmentScreen.classList.add('hidden');
 startScreen.classList.add('hidden');
@@ -268,35 +237,67 @@ leaderboardList.innerHTML = '';
 data.forEach((record, index) => {
 const rank = index + 1;
 const medal = ['🥇', '🥈', '🥉'][index] || `<span class="text-sm">${rank}위</span>`;
-
 const date = new Date(record.created_at);
-const year = date.getFullYear();
-const month = String(date.getMonth() + 1).padStart(2, '0');
-const day = String(date.getDate()).padStart(2, '0');
-const hours = String(date.getHours()).padStart(2, '0');
-const minutes = String(date.getMinutes()).padStart(2, '0');
-const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}`;
-
+const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 const li = document.createElement('li');
 li.className = 'flex items-center justify-between bg-black/30 p-3 rounded-lg text-white text-shadow';
 li.innerHTML = `
-                   <div class="flex items-center">
-                       <span class="font-bold text-xl w-12 text-left">${medal}</span>
-                       <div>
-                           <span class="font-semibold">${record.department}</span>
-                           <span class="block text-xs text-gray-300">${formattedDate}</span>
-                       </div>
-                   </div>
-                   <span class="font-digital font-bold text-amber-400">${record.avg_speed.toFixed(4)}초</span>
-               `;
+<div class="flex items-center">
+<span class="font-bold text-xl w-12 text-left">${medal}</span>
+<div>
+<span class="font-semibold">${record.department}</span>
+<span class="block text-xs text-gray-300">${formattedDate}</span>
+</div>
+</div>
+<span class="font-digital font-bold text-amber-400">${record.avg_speed.toFixed(4)}초</span>`;
 leaderboardList.appendChild(li);
 });
 }
 
-// --- Game Logic ---
+function showPersonalRecords() {
+startScreen.classList.add('hidden');
+personalRecordsScreen.classList.remove('hidden');
+
+const records = JSON.parse(localStorage.getItem('personalBests')) || [];
+personalRecordsList.innerHTML = '';
+
+if (records.length === 0) {
+personalRecordsList.innerHTML = `<div class="text-white text-center">아직 저장된 기록이 없습니다.<br>'10개 모드'를 플레이하고 기록을 저장해보세요!</div>`;
+return;
+}
+
+const sortedRecords = [...records].sort((a, b) => a.speed - b.speed);
+const bestSpeed = sortedRecords[0].speed;
+
+records.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+records.forEach(record => {
+const isBest = record.speed === bestSpeed;
+const medal = isBest ? '👑' : '•';
+const textColor = isBest ? 'text-amber-400' : 'text-white';
+
+const date = new Date(record.date);
+const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+
+const li = document.createElement('li');
+li.className = `flex items-center justify-between bg-black/30 p-3 rounded-lg text-shadow ${textColor}`;
+li.innerHTML = `
+<div class="flex items-center">
+<span class="font-bold text-xl w-8 text-center">${medal}</span>
+<div class="text-left">
+<span class="font-digital font-bold">${record.speed.toFixed(4)}초</span>
+<span class="block text-xs text-gray-300">${formattedDate}</span>
+</div>
+</div>`;
+personalRecordsList.appendChild(li);
+});
+}
+
+        /**
+         * MODIFIED: The submit button is now disabled by default when this screen appears.
+         */
 function showResults() {
 practiceScreen.classList.add('hidden');
-departmentScreen.classList.remove('hidden');
 
 let avgSpeed = 0;
 if (timeRecords.length > 0) {
@@ -304,54 +305,41 @@ const totalTime = timeRecords.reduce((sum, time) => sum + time, 0);
 avgSpeed = (totalTime / timeRecords.length);
 }
 lastGameResult = { avgSpeed: avgSpeed };
+
+if (avgSpeed > 0) {
+const personalBests = JSON.parse(localStorage.getItem('personalBests')) || [];
+personalBests.push({ speed: avgSpeed, date: new Date().toISOString() });
+localStorage.setItem('personalBests', JSON.stringify(personalBests));
+}
+
+departmentScreen.classList.remove('hidden');
+            submitScoreButton.disabled = true; // Button is disabled initially
 departmentSelect.value = '';
 departmentSearch.value = '';
 departmentSearch.dispatchEvent(new Event('input')); 
 departmentSelect.focus();
 }
 
-// --- The rest of the functions remain the same ---
-document.addEventListener('DOMContentLoaded', recordAndDisplayVisit);
-mode10Button.addEventListener('click', () => startGame('10rounds'));
-modeInfiniteButton.addEventListener('click', () => startGame('infinite'));
-viewRankingButton.addEventListener('click', fetchAndShowLeaderboard);
-submitScoreButton.addEventListener('click', submitScoreAndShowLeaderboard);
-leaderboardHomeButton.addEventListener('click', goToHome);
-infiniteHomeButton.addEventListener('click', goToHome);
-submitButton.addEventListener('click', checkAnswer);
-inputField.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); });
-inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !inputField.disabled) checkAnswer(); });
-
-function recordAndDisplayVisit() {
-try {
-supabaseClient.from('visitors').insert([{}]);
-const today = new Date().toISOString().slice(0, 10);
-supabaseClient.from('visitors').select('*', { count: 'exact', head: true })
-.gte('created_at', `${today}T00:00:00.000Z`)
-.lte('created_at', `${today}T23:59:59.999Z`)
-.then(({ count, error }) => {
-if (error) throw error;
-visitorCountDisplay.textContent = count;
-});
-} catch (error) {
-console.error('Error interacting with Supabase:', error);
-visitorCountDisplay.textContent = '??';
-}
-}
 async function submitScoreAndShowLeaderboard() {
-const department = departmentSelect.value || '익명';
-if (department === "") {
-alert("학과를 선택해주세요!");
+const department = departmentSelect.value;
+            // Safeguard check, though the button should be disabled if department is not selected.
+if (!department) {
+                // Using a custom modal/alert would be better, but for now, standard alert.
+                const feedback = document.createElement('div');
+                feedback.textContent = '학과를 선택해주세요!';
+                feedback.className = 'fixed top-5 left-1/2 -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg';
+                document.body.appendChild(feedback);
+                setTimeout(() => document.body.removeChild(feedback), 2000);
+                console.error("Submit called with no department selected.");
 return;
 }
+
 if (lastGameResult.avgSpeed) {
 submitScoreButton.disabled = true;
 submitScoreButton.textContent = '등록 중...';
-
 await supabaseClient.from('leaderboard').insert([
 { department: department, avg_speed: lastGameResult.avgSpeed }
 ]);
-
 submitScoreButton.disabled = false;
 submitScoreButton.textContent = '기록 제출 및 랭킹 보기';
 }
@@ -368,6 +356,7 @@ else infiniteHomeButton.classList.add('hidden');
 wrongAttemptsDisplay.textContent = `틀린 횟수: 0`;
 startNewRound();
 }
+
 function startNewRound() {
 if (gameMode === '10rounds' && currentRound >= roundLimit) { showResults(); return; }
 currentRound++;
@@ -377,6 +366,7 @@ inputField.value = ''; feedbackDisplay.textContent = '';
 countdown(isFirstRound ? 3 : 1);
 isFirstRound = false;
 }
+
 function countdown(seconds) {
 if (seconds > 0) {
 numberDisplay.textContent = seconds; numberDisplay.style.color = 'white';
@@ -388,38 +378,59 @@ inputField.disabled = false; submitButton.disabled = false;
 inputField.focus(); timerStart = Date.now();
 }
 }
+
 function generateRandomNumber() {
 const firstDigit = Math.floor(Math.random() * 9) + 1;
 let otherDigits = '';
 for (let i = 0; i < 3; i++) { otherDigits += Math.floor(Math.random() * 10); }
 return `${firstDigit}${otherDigits}`;
 }
+
 function checkAnswer() {
 if (inputField.disabled) return;
 const userInput = inputField.value;
 if (userInput === currentNumber) {
 const timeTaken = (Date.now() - timerStart) / 1000;
-timeRecords.push(timeTaken); correctAnswers++;
+if (gameMode === '10rounds') {
+timeRecords.push(timeTaken);
+}
+correctAnswers++;
 feedbackDisplay.textContent = `정답! (${timeTaken.toFixed(4)}초)`;
 feedbackDisplay.style.color = '#10B981';
 inputField.disabled = true; submitButton.disabled = true;
 setTimeout(startNewRound, 500);
 } else {
 wrongAnswers++;
-                wrongAttemptsDisplay.textContent = `틀린 횟수: 0`;
-                wrongAttemptsDisplay.textContent = `틀린 횟수: ${wrongAnswers}`;
+wrongAttemptsDisplay.textContent = `틀린 횟수: ${wrongAnswers}`;
 feedbackDisplay.textContent = '다시'; feedbackDisplay.style.color = '#EF4444';
 inputField.value = '';
 inputField.classList.add('animate-bounce');
 setTimeout(() => inputField.classList.remove('animate-bounce'), 500);
 }
 }
+
 function goToHome() {
 departmentScreen.classList.add('hidden');
 leaderboardScreen.classList.add('hidden');
 practiceScreen.classList.add('hidden');
+personalRecordsScreen.classList.add('hidden');
 startScreen.classList.remove('hidden');
 }
+
+// --- Initialize App ---
+document.addEventListener('DOMContentLoaded', recordAndDisplayVisit);
+mode10Button.addEventListener('click', () => startGame('10rounds'));
+modeInfiniteButton.addEventListener('click', () => startGame('infinite'));
+viewRankingButton.addEventListener('click', fetchAndShowLeaderboard);
+viewPersonalRecordsButton.addEventListener('click', showPersonalRecords);
+submitScoreButton.addEventListener('click', submitScoreAndShowLeaderboard);
+leaderboardHomeButton.addEventListener('click', goToHome);
+personalRecordsHomeButton.addEventListener('click', goToHome);
+infiniteHomeButton.addEventListener('click', goToHome);
+submitButton.addEventListener('click', checkAnswer);
+inputField.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); });
+inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !inputField.disabled) checkAnswer(); });
 </script>
 </body>
 </html>
+
