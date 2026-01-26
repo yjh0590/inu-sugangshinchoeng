@@ -51,6 +51,11 @@
 
         #department-select { max-height: 200px; overflow-y: auto; }
         #captcha-canvas { background-color: #eee; border: 1px solid #999; }
+        
+        /* 커스텀 스크롤바 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 10px; }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -104,18 +109,16 @@
                 <div id="wrong-attempts-display" class="text-red-500 font-bold text-lg text-shadow"></div>
             </div>
 
-            <!-- PC 버전 레이아웃 (원본 이미지 스타일) -->
+            <!-- PC 버전 레이아웃 -->
             <div id="pc-practice-layout" class="hidden w-full flex flex-col items-center">
                 <div id="countdown-display-pc" class="font-digital text-6xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center"></div>
                 
-                <div id="pc-modal" class="pc-modal hidden">
+                <div id="pc-modal" class="pc-modal hidden mx-auto">
                     <h2 class="text-xl font-bold border-b pb-2 mb-4 text-gray-800">수강신청 매크로 방지</h2>
                     <div class="flex flex-col md:flex-row gap-6">
-                        <!-- 캡차 영역 -->
                         <div class="flex-shrink-0">
                             <canvas id="captcha-canvas" width="250" height="250"></canvas>
                         </div>
-                        <!-- 설명 영역 -->
                         <div class="text-sm text-gray-800 space-y-4">
                             <div>
                                 <p class="font-bold">1. 이미지에 보이는 숫자 4글자를 입력하고 "확인" 버튼을 클릭하세요.</p>
@@ -147,7 +150,7 @@
             <div id="mobile-practice-layout" class="hidden flex flex-col items-center justify-center">
                 <div id="countdown-display-mobile" class="font-digital text-6xl font-black text-white text-shadow my-4 h-16 flex items-center justify-center"></div>
                 
-                <div id="mobile-popup" class="mobile-modal transition-opacity duration-200 opacity-0 pointer-events-none">
+                <div id="mobile-popup" class="mobile-modal transition-opacity duration-200 opacity-0 pointer-events-none mx-auto">
                     <div class="flex items-center justify-center space-x-1 mb-2">
                         <span class="text-red-500 text-xl">🚫</span>
                         <h2 class="text-lg font-bold text-black">수강신청 매크로 방지</h2>
@@ -183,9 +186,101 @@
             <input type="text" id="department-search" class="w-full text-lg p-3 mb-2 border-2 border-slate-300 rounded-lg shadow-md bg-white focus:outline-none" placeholder="학과 검색...">
             <select id="department-select" class="w-full text-center text-lg p-3 border-2 border-slate-300 rounded-lg shadow-md bg-white" size="5">
                  <option value="">-- 학과를 선택하세요 --</option>
-                 <optgroup label="정보기술대학"><option value="컴퓨터공학부">컴퓨터공학부</option><option value="정보통신공학과">정보통신공학과</option><option value="임베디드시스템공학과">임베디드시스템공학과</option></optgroup>
-                 <optgroup label="인문대학"><option value="국어국문학과">국어국문학과</option><option value="영어영문학과">영어영문학과</option></optgroup>
-                 <optgroup label="공과대학"><option value="기계공학과">기계공학과</option><option value="전기공학과">전기공학과</option><option value="전자공학부">전자공학부</option></optgroup>
+                 <optgroup label="융합자유전공대학">
+                    <option value="자유전공학부">자유전공학부</option>
+                 </optgroup>
+                 <optgroup label="첨단분야 특성화">
+                    <option value="데이터과학과">데이터과학과</option>
+                    <option value="에너지화학공학과">에너지화학공학과</option>
+                    <option value="스마트물류공학전공">스마트물류공학전공</option>
+                    <option value="바이오-로봇시스템공학과">바이오-로봇시스템공학과</option>
+                 </optgroup>
+                 <optgroup label="인문대학">
+                    <option value="국어국문학과">국어국문학과</option>
+                    <option value="영어영문학과">영어영문학과</option>
+                    <option value="독어독문학과">독어독문학과</option>
+                    <option value="불어불문학과">불어불문학과</option>
+                    <option value="일본지역문화학과">일본지역문화학과</option>
+                    <option value="중어중국학과">중어중국학과</option>
+                 </optgroup>
+                 <optgroup label="자연과학대학">
+                    <option value="수학과">수학과</option>
+                    <option value="물리학과">물리학과</option>
+                    <option value="화학과">화학과</option>
+                    <option value="패션산업학과">패션산업학과</option>
+                    <option value="해양학과">해양학과</option>
+                 </optgroup>
+                 <optgroup label="사회과학대학">
+                    <option value="사회복지학과">사회복지학과</option>
+                    <option value="미디어커뮤니케이션학과">미디어커뮤니케이션학과</option>
+                    <option value="문헌정보학과">문헌정보학과</option>
+                    <option value="창의인재개발학과">창의인재개발학과</option>
+                 </optgroup>
+                 <optgroup label="글로벌정경대학">
+                    <option value="행정학과">행정학과</option>
+                    <option value="정치외교학과">정치외교학과</option>
+                    <option value="경제학과">경제학과</option>
+                    <option value="Global Trade & Service학부">Global Trade & Service학부</option>
+                    <option value="소비자학과">소비자학과</option>
+                 </optgroup>
+                 <optgroup label="공과대학">
+                    <option value="기계공학과">기계공학과</option>
+                    <option value="전기공학과">전기공학과</option>
+                    <option value="전자공학부">전자공학부</option>
+                    <option value="산업경영공학과">산업경영공학과</option>
+                    <option value="신소재공학과">신소재공학과</option>
+                    <option value="안전공학과">안전공학과</option>
+                    <option value="에너지화학공학과">에너지화학공학과</option>
+                    <option value="바이오-로봇시스템공학과">바이오-로봇시스템공학과</option>
+                 </optgroup>
+                 <optgroup label="정보기술대학">
+                    <option value="컴퓨터공학부">컴퓨터공학부</option>
+                    <option value="정보통신공학과">정보통신공학과</option>
+                    <option value="임베디드시스템공학과">임베디드시스템공학과</option>
+                 </optgroup>
+                 <optgroup label="경영대학">
+                    <option value="경영학부">경영학부</option>
+                    <option value="데이터과학과">데이터과학과</option>
+                    <option value="세무회계학과">세무회계학과</option>
+                 </optgroup>
+                 <optgroup label="예술체육대학">
+                    <option value="조형예술학부 한국화전공">조형예술학부 한국화전공</option>
+                    <option value="조형예술학부 서양화전공">조형예술학부 서양화전공</option>
+                    <option value="디자인학부">디자인학부</option>
+                    <option value="공연예술학과">공연예술학과</option>
+                    <option value="스포츠과학과">스포츠과학과</option>
+                    <option value="운동건강학부">운동건강학부</option>
+                 </optgroup>
+                 <optgroup label="사범대학">
+                    <option value="국어교육과">국어교육과</option>
+                    <option value="영어교육과">영어교육과</option>
+                    <option value="일어교육과">일어교육과</option>
+                    <option value="수학교육과">수학교육과</option>
+                    <option value="체육교육과">체육교육과</option>
+                    <option value="유아교육과">유아교육과</option>
+                    <option value="역사교육과">역사교육과</option>
+                    <option value="윤리교육과">윤리교육과</option>
+                 </optgroup>
+                 <optgroup label="도시과학대학">
+                    <option value="도시행정학과">도시행정학과</option>
+                    <option value="도시환경공학부 건설환경공학전공">도시환경공학부 건설환경공학전공</option>
+                    <option value="도시환경공학부 환경공학전공">도시환경공학부 환경공학전공</option>
+                    <option value="도시공학과">도시공학과</option>
+                    <option value="도시건축학부">도시건축학부</option>
+                 </optgroup>
+                 <optgroup label="생명과학기술대학">
+                    <option value="생명과학부 생명과학전공">생명과학부 생명과학전공</option>
+                    <option value="생명과학부 분자의생명전공">생명과학부 분자의생명전공</option>
+                    <option value="생명공학부 생명공학전공">생명공학부 생명공학전공</option>
+                    <option value="생명공학부 나노바이오공학전공">생명공학부 나노바이오공학전공</option>
+                 </optgroup>
+                 <optgroup label="동북아국제통상물류학부">
+                    <option value="동북아국제통상전공">동북아국제통상전공</option>
+                    <option value="스마트물류공학전공">스마트물류공학전공</option>
+                 </optgroup>
+                 <optgroup label="법학부">
+                    <option value="법학부">법학부</option>
+                 </optgroup>
             </select>
             <button id="submit-score-button" class="w-full mt-4 bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-green-700 disabled:bg-gray-400" disabled>기록 제출 및 랭킹 보기</button>
         </div>
@@ -194,12 +289,19 @@
         <div id="leaderboard-screen" class="hidden p-6 max-w-md mx-auto">
             <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-4">랭킹</h1>
             <div class="flex justify-center mb-4 border-b border-slate-600">
-                <button id="today-ranking-tab" class="flex-1 pb-2 font-bold text-amber-400 border-b-2 border-amber-400">오늘의 랭킹</button>
-                <button id="hof-tab" class="flex-1 pb-2 font-bold text-slate-400">명예의 전당</button>
+                <button id="today-ranking-tab" class="flex-1 pb-2 font-bold transition-colors duration-200">오늘의 랭킹</button>
+                <button id="hof-tab" class="flex-1 pb-2 font-bold transition-colors duration-200">명예의 전당</button>
             </div>
             <div id="today-ranking-view" class="space-y-2 max-h-80 overflow-y-auto"></div>
             <div id="hof-view" class="hidden space-y-2 max-h-80 overflow-y-auto"></div>
-            <button onclick="location.reload()" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg">처음으로 돌아가기</button>
+            <button onclick="location.reload()" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700 transition-colors">처음으로 돌아가기</button>
+        </div>
+
+        <!-- 개인 기록 화면 -->
+        <div id="personal-records-screen" class="hidden p-6 max-w-md mx-auto">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">개인 기록</h1>
+            <div id="personal-records-list" class="space-y-2 text-left max-h-80 overflow-y-auto"></div>
+            <button onclick="location.reload()" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700 transition-colors">처음으로 돌아가기</button>
         </div>
     </div>
 
@@ -236,12 +338,13 @@
                 await supabaseClient.from('visitors').insert([{}]);
                 const { count: vCount } = await supabaseClient.from('visitors').select('*', { count: 'exact', head: true });
                 document.getElementById('visitor-count').textContent = vCount || 0;
+                
                 const { data: lbData } = await supabaseClient.from('leaderboard').select('avg_speed');
                 if (lbData?.length) {
                     const avg = lbData.reduce((s, r) => s + r.avg_speed, 0) / lbData.length;
                     document.getElementById('average-speed').textContent = avg.toFixed(4);
                 }
-            } catch (e) {}
+            } catch (e) { console.error(e); }
         }
 
         function startGame(mode, type) {
@@ -332,40 +435,24 @@
             }
         }
 
-        /**
-         * PC 버전 캡차 그리기 (랜덤 색상 그물망 및 노이즈 재현)
-         */
         function drawCaptcha(text) {
             const canvas = document.getElementById('captcha-canvas');
             const ctx = canvas.getContext('2d');
             const width = canvas.width;
             const height = canvas.height;
-
-            // 배경
             ctx.clearRect(0,0,width,height); 
-            ctx.fillStyle='#eee'; 
-            ctx.fillRect(0,0,width,height);
-
-            // 다양한 색상의 그물망 패턴
+            ctx.fillStyle='#eee'; ctx.fillRect(0,0,width,height);
             ctx.lineWidth = 1.5;
             for (let i = 0; i < 40; i++) {
-                // 매 선마다 랜덤 색상 생성
                 const r = Math.floor(Math.random() * 255);
                 const g = Math.floor(Math.random() * 255);
                 const b = Math.floor(Math.random() * 255);
                 ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${Math.random() * 0.4 + 0.3})`;
-                
                 ctx.beginPath();
                 ctx.moveTo(Math.random() * width, Math.random() * height);
-                ctx.bezierCurveTo(
-                    Math.random() * width, Math.random() * height,
-                    Math.random() * width, Math.random() * height,
-                    Math.random() * width, Math.random() * height
-                );
+                ctx.bezierCurveTo(Math.random() * width, Math.random() * height, Math.random() * width, Math.random() * height, Math.random() * width, Math.random() * height);
                 ctx.stroke();
             }
-
-            // 추가적인 랜덤 색상 점 노이즈
             for (let i = 0; i < 200; i++) {
                 const r = Math.floor(Math.random() * 200);
                 const g = Math.floor(Math.random() * 200);
@@ -373,22 +460,14 @@
                 ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.3)`;
                 ctx.fillRect(Math.random() * width, Math.random() * height, 2, 2);
             }
-
-            // 숫자 그리기
-            ctx.font='bold 60px "Noto Sans KR"'; 
-            ctx.textBaseline='middle';
-            
+            ctx.font='bold 60px "Noto Sans KR"'; ctx.textBaseline='middle';
             const startX = (width - (text.length * 45)) / 2;
             for(let i=0; i<text.length; i++) {
                 ctx.save();
                 const x = startX + i*45 + (Math.random()-0.5)*10;
                 const y = height/2 + (Math.random()-0.5)*15;
-                ctx.translate(x, y); 
-                ctx.rotate((Math.random()-0.5)*0.3);
-                
-                ctx.fillStyle='black';
-                ctx.fillText(text[i], 0, 0); 
-                ctx.restore();
+                ctx.translate(x, y); ctx.rotate((Math.random()-0.5)*0.3);
+                ctx.fillStyle='black'; ctx.fillText(text[i], 0, 0); ctx.restore();
             }
         }
 
@@ -397,10 +476,69 @@
             const avg = timeRecords.reduce((a,b) => a+b, 0) / timeRecords.length;
             document.getElementById('result-speed-text').textContent = `평균 기록: ${avg.toFixed(4)}초`;
             window.lastAvg = avg;
+            
+            const pb = JSON.parse(localStorage.getItem('personalBests')) || [];
+            pb.push({ speed: avg, date: new Date().toISOString(), type: deviceType });
+            localStorage.setItem('personalBests', JSON.stringify(pb));
+            
             departmentScreen.classList.remove('hidden');
         }
 
-        // --- 리스너 설정 ---
+        async function fetchAndShowLeaderboard() {
+            startScreen.classList.add('hidden');
+            leaderboardScreen.classList.remove('hidden');
+            setActiveTab('today');
+            
+            const todayView = document.getElementById('today-ranking-view');
+            const hofView = document.getElementById('hof-view');
+            todayView.innerHTML = `<p class="text-white opacity-60">데이터를 불러오는 중...</p>`;
+            
+            const { data, error } = await supabaseClient.from('leaderboard').select('*').order('avg_speed', { ascending: true });
+            if (error) {
+                todayView.innerHTML = `<p class="text-red-400">데이터 로드 실패</p>`;
+                return;
+            }
+
+            todayView.innerHTML = ''; hofView.innerHTML = '';
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayData = data.filter(r => r.created_at.startsWith(todayStr)).slice(0, 20);
+            const hofData = data.slice(0, 20);
+            
+            const renderList = (list, target) => {
+                if (!list.length) {
+                    target.innerHTML = `<p class="text-white opacity-60">등록된 기록이 없습니다.</p>`;
+                    return;
+                }
+                list.forEach((r, i) => {
+                    const div = document.createElement('div');
+                    // 패딩을 줄이고(py-1.5) 너비를 조절하여 콤팩트하게 수정
+                    div.className = "flex justify-between bg-black/30 py-1.5 px-3 rounded-lg text-white text-sm hover:bg-black/40 transition-colors";
+                    div.innerHTML = `<span><span class="font-bold mr-2 text-amber-400">${i+1}위</span> ${r.department}</span><span class="font-digital text-blue-300 font-bold">${r.avg_speed.toFixed(4)}s</span>`;
+                    target.appendChild(div);
+                });
+            };
+
+            renderList(todayData, todayView);
+            renderList(hofData, hofView);
+        }
+
+        function setActiveTab(tab) {
+            const todayBtn = document.getElementById('today-ranking-tab');
+            const hofBtn = document.getElementById('hof-tab');
+            const todayView = document.getElementById('today-ranking-view');
+            const hofView = document.getElementById('hof-view');
+            
+            if (tab === 'today') {
+                todayView.classList.remove('hidden'); hofView.classList.add('hidden');
+                todayBtn.className = "flex-1 pb-2 font-bold text-amber-400 border-b-2 border-amber-400";
+                hofBtn.className = "flex-1 pb-2 font-bold text-slate-400 border-b-2 border-transparent";
+            } else {
+                hofView.classList.remove('hidden'); todayView.classList.add('hidden');
+                hofBtn.className = "flex-1 pb-2 font-bold text-amber-400 border-b-2 border-amber-400";
+                todayBtn.className = "flex-1 pb-2 font-bold text-slate-400 border-b-2 border-transparent";
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', initStats);
         document.getElementById('practice-home-button').onclick = () => location.reload();
         
@@ -413,12 +551,57 @@
         document.getElementById('submit-score-button').onclick = async () => {
             const dept = document.getElementById('department-select').value;
             if(!dept) return;
-            await supabaseClient.from('leaderboard').insert([{ department: dept, avg_speed: window.lastAvg }]);
-            location.reload();
+            const btn = document.getElementById('submit-score-button');
+            btn.disabled = true;
+            btn.textContent = "등록 중...";
+            
+            const { error } = await supabaseClient.from('leaderboard').insert([{ department: dept, avg_speed: window.lastAvg }]);
+            if (error) {
+                alert("기록 등록에 실패했습니다.");
+                btn.disabled = false;
+                btn.textContent = "기록 제출 및 랭킹 보기";
+            } else {
+                fetchAndShowLeaderboard();
+            }
         };
 
         document.getElementById('department-select').onchange = (e) => {
             document.getElementById('submit-score-button').disabled = !e.target.value;
+        };
+
+        document.getElementById('department-search').oninput = (e) => {
+            const term = e.target.value.toLowerCase();
+            const options = document.getElementById('department-select').querySelectorAll('option');
+            options.forEach(opt => {
+                if (opt.value === "") return;
+                opt.style.display = opt.textContent.toLowerCase().includes(term) ? "" : "none";
+            });
+        };
+
+        document.getElementById('view-ranking-button').onclick = fetchAndShowLeaderboard;
+        document.getElementById('today-ranking-tab').onclick = () => setActiveTab('today');
+        document.getElementById('hof-tab').onclick = () => setActiveTab('hof');
+
+        document.getElementById('view-personal-records-button').onclick = () => {
+            startScreen.classList.add('hidden');
+            document.getElementById('personal-records-screen').classList.remove('hidden');
+            const list = document.getElementById('personal-records-list');
+            const pb = JSON.parse(localStorage.getItem('personalBests')) || [];
+            
+            if (!pb.length) {
+                list.innerHTML = `<p class="text-white text-center opacity-60">기록이 없습니다.</p>`;
+                return;
+            }
+            
+            list.innerHTML = pb.sort((a,b) => a.speed - b.speed).map(r => `
+                <div class="bg-black/30 py-2 px-3 rounded-lg text-white flex justify-between items-center text-sm mb-1">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-gray-400">${new Date(r.date).toLocaleDateString()}</span>
+                        <span class="font-bold">${r.type === 'pc' ? '🖥 PC' : '📱 모바일'}</span>
+                    </div>
+                    <span class="font-digital text-amber-400 text-lg font-bold">${r.speed.toFixed(4)}s</span>
+                </div>
+            `).join('');
         };
     </script>
 </body>
