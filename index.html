@@ -31,6 +31,13 @@
             max-height: 200px;
             overflow-y: auto;
         }
+        /* 캡챠 캔버스 스타일 추가 */
+        #captcha-canvas {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -68,7 +75,15 @@
             </button>
             <div id="wrong-attempts-display" class="absolute top-0 right-0 text-red-500 font-bold text-lg text-shadow m-2 p-2"></div>
             <div id="round-counter" class="text-white text-shadow font-bold text-lg mb-4 h-6"></div>
-            <div id="number-display" class="font-digital text-6xl sm:text-8xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center"></div>
+            
+            <!-- 수정된 부분: 카운트다운용 텍스트와 캡챠용 캔버스 영역 분리 -->
+            <div id="countdown-display" class="font-digital text-6xl sm:text-8xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center"></div>
+            
+            <div id="captcha-container" class="hidden my-4 h-24 flex items-center justify-center">
+                <canvas id="captcha-canvas" width="300" height="100"></canvas>
+            </div>
+            <!-- //수정된 부분 끝 -->
+
             <div class="flex items-stretch justify-center space-x-2">
                 <!-- Cleaned up Single Input Field -->
                 <input type="text" id="input-field" class="flex-grow w-2/3 text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md" placeholder="####" maxlength="4" disabled>
@@ -129,8 +144,8 @@
 
     <script>
         // --- Supabase Setup ---
-        const SUPABASE_URL = 'https://본인의프로젝트주소.supabase.co'; 
-        const SUPABASE_KEY = '본인의_ANON_PUBLIC_KEY'; 
+        const SUPABASE_URL = 'https://bnkjgverdwwpdexacsbx.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJua2pndmVyZHd3cGRleGFjc2J4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5NjkwODEsImV4cCI6MjA4NDU0NTA4MX0.PWT24dCJG-J8s4_jF74pOQz8JlHOBj4NtOWyNGmeTnI'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // --- DOM Elements ---
@@ -152,7 +167,12 @@
         const mode10Button = document.getElementById('mode-10-button');
         const modeInfiniteButton = document.getElementById('mode-infinite-button');
         const roundCounter = document.getElementById('round-counter');
-        const numberDisplay = document.getElementById('number-display');
+        
+        // 수정된 DOM 요소: 카운트다운과 캡챠 분리
+        const countdownDisplay = document.getElementById('countdown-display');
+        const captchaContainer = document.getElementById('captcha-container');
+        const captchaCanvas = document.getElementById('captcha-canvas');
+        
         const inputField = document.getElementById('input-field');
         const submitButton = document.getElementById('submit-button');
         const feedbackDisplay = document.getElementById('feedback-display');
@@ -264,6 +284,57 @@
             }
         }
 
+        // --- 캡챠 그리기 함수 (추가됨) ---
+        function drawCaptcha(text) {
+            const ctx = captchaCanvas.getContext('2d');
+            const width = captchaCanvas.width;
+            const height = captchaCanvas.height;
+
+            // 배경 초기화 (흰색)
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, width, height);
+
+            // 방해선 그리기
+            for (let i = 0; i < 7; i++) {
+                ctx.strokeStyle = `rgba(${Math.random()*150},${Math.random()*150},${Math.random()*150},0.6)`;
+                ctx.lineWidth = 1 + Math.random();
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * width, Math.random() * height);
+                ctx.lineTo(Math.random() * width, Math.random() * height);
+                ctx.stroke();
+            }
+
+            // 텍스트 그리기
+            ctx.font = 'bold 50px "Noto Sans KR"';
+            ctx.textBaseline = 'middle';
+            
+            const totalWidthEstimate = text.length * 40; 
+            const startX = (width - totalWidthEstimate) / 2;
+
+            for (let i = 0; i < text.length; i++) {
+                ctx.save();
+                const x = startX + (i * 45) + 20;
+                const y = height / 2 + (Math.random() * 10 - 5);
+                const angle = (Math.random() - 0.5) * 0.4; // 약간의 회전
+                
+                ctx.translate(x, y);
+                ctx.rotate(angle);
+                
+                ctx.fillStyle = `rgb(${Math.floor(Math.random()*100)}, ${Math.floor(Math.random()*100)}, ${Math.floor(Math.random()*100)})`;
+                ctx.fillText(text[i], -10, 0); 
+                ctx.restore();
+            }
+
+            // 노이즈 추가
+            for (let i = 0; i < 30; i++) {
+                ctx.fillStyle = `rgba(0,0,0,0.2)`;
+                ctx.beginPath();
+                ctx.arc(Math.random() * width, Math.random() * height, 1, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+
         function startGame(mode) {
             gameMode = mode; currentRound = 0; timeRecords = []; wrongAnswers = 0; isFirstRound = true;
             startScreen.classList.add('hidden');
@@ -283,15 +354,23 @@
             roundCounter.textContent = gameMode === '10rounds' ? `${currentRound} / ${roundLimit}` : `라운드 ${currentRound}`;
             inputField.value = ''; inputField.disabled = true; feedbackDisplay.textContent = '';
             
+            // 화면 상태 초기화: 캡챠 숨김, 카운트다운 표시
+            captchaContainer.classList.add('hidden');
+            countdownDisplay.classList.remove('hidden');
+
             let count = isFirstRound ? 3 : 1;
             const timer = setInterval(() => {
-                numberDisplay.textContent = count;
-                numberDisplay.style.color = 'white';
+                countdownDisplay.textContent = count;
+                
                 if (count <= 0) {
                     clearInterval(timer);
                     currentNumber = String(Math.floor(Math.random() * 9000) + 1000);
-                    numberDisplay.textContent = currentNumber;
-                    numberDisplay.style.color = '#FBBF24';
+                    
+                    // 카운트다운 숨기고 캡챠 표시
+                    countdownDisplay.classList.add('hidden');
+                    captchaContainer.classList.remove('hidden');
+                    drawCaptcha(currentNumber);
+
                     inputField.disabled = false;
                     inputField.focus();
                     timerStart = Date.now();
