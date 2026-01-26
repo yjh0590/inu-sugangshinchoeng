@@ -1,467 +1,394 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>수강신청 매크로 방지 연습</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            background-color: rgba(0, 0, 0, 0.4);
-            background-blend-mode: overlay;
-        }
-        body::before {
-            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('https://raw.githubusercontent.com/yjh0590/inu-sugangshinchoeng/refs/heads/main/images.jpeg');
-            background-size: cover; background-position: center;
-            filter: blur(4px); z-index: -1;
-        }
-        .font-digital { font-family: 'Roboto Mono', monospace; }
-        .text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
-        #department-select {
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        /* 캡챠 캔버스 스타일 */
-        #captcha-canvas {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            margin: 1rem auto;
-            cursor: pointer; /* 클릭해서 새로고침 느낌 */
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수강신청 매크로 방지 연습</title>
+<!-- Supabase JS Library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+body {
+font-family: 'Noto Sans KR', sans-serif;
+-webkit-font-smoothing: antialiased;
+background-color: rgba(0, 0, 0, 0.4);
+background-blend-mode: overlay;
+}
+body::before {
+content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+background-image: url('https://raw.githubusercontent.com/yjh0590/inu-sugangshinchoeng/refs/heads/main/images.jpeg');
+background-size: cover; background-position: center;
+filter: blur(4px); z-index: -1;
+}
+.font-digital { font-family: 'Roboto Mono', monospace; }
+.text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+#department-select {
+max-height: 200px;
+overflow-y: auto;
+}
+</style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
 
-    <div id="app-container" class="w-full max-w-md mx-auto p-6 sm:p-8 text-center transition-all duration-300">
+<div id="app-container" class="w-full max-w-md mx-auto p-6 sm:p-8 text-center transition-all duration-300">
 
-        <div id="start-screen">
-            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-2">수강신청 연습</h1>
-            <p class="text-white text-shadow mb-8">모드를 선택하세요!</p>
-            <div class="space-y-4">
+<!-- Start Screen -->
+<div id="start-screen">
+<h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-2">수강신청 연습</h1>
+<p class="text-white text-shadow mb-8">모드를 선택하세요!</p>
+<div class="space-y-4">
+                <button id="mode-10-button" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-indigo-700">10개 모드</button>
+                <button id="mode-infinite-button" class="w-full bg-teal-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-teal-700">무한 모드</button>
+                <button id="view-ranking-button" class="w-full bg-amber-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-amber-700">랭킹 보기</button>
+                <button id="view-personal-records-button" class="w-full bg-sky-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-sky-700">개인 기록 보기</button>
                 <button id="mode-10-button" class="w-full bg-[#0F4C9C] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:opacity-90">10개 모드</button>
                 <button id="mode-infinite-button" class="w-full bg-[#EA3C57] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:opacity-90">무한 모드</button>
                 <button id="view-ranking-button" class="w-full bg-[#F8C66D] text-slate-800 font-bold py-3 px-4 rounded-lg shadow-lg hover:opacity-90">랭킹 보기</button>
                 <button id="view-personal-records-button" class="w-full bg-[#C7C1B5] text-slate-800 font-bold py-3 px-4 rounded-lg shadow-lg hover:opacity-90">개인 기록 보기</button>
-            </div>
-            <div class="mt-8 flex flex-col items-center space-y-2 text-white text-shadow text-sm">
-                <div class="flex space-x-4">
-                    <div>총 방문자: <span id="visitor-count" class="font-bold">...</span>명</div>
-                    <div>오늘 방문자: <span id="today-visitor-count" class="font-bold">...</span>명</div>
-                </div>
-                <div>전체 평균 속도: <span id="average-speed" class="font-bold">...</span>초</div>
-            </div>
-        </div>
+</div>
+<!-- Stats Display: Total and Today Visitors -->
+<div class="mt-8 flex flex-col items-center space-y-2 text-white text-shadow text-sm">
+<div class="flex space-x-4">
+<div>총 방문자: <span id="visitor-count" class="font-bold">...</span>명</div>
+<div>오늘 방문자: <span id="today-visitor-count" class="font-bold">...</span>명</div>
+</div>
+<div>전체 평균 속도: <span id="average-speed" class="font-bold">...</span>초</div>
+</div>
+</div>
 
-        <div id="practice-screen" class="hidden relative">
-            <button id="practice-home-button" class="absolute top-0 left-0 text-white bg-slate-600/50 hover:bg-slate-700/70 rounded-full p-2 m-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-            </button>
-            <div id="wrong-attempts-display" class="absolute top-0 right-0 text-red-500 font-bold text-lg text-shadow m-2 p-2"></div>
-            <div id="round-counter" class="text-white text-shadow font-bold text-lg mb-4 h-6"></div>
-            
-            <div id="countdown-display" class="font-digital text-6xl sm:text-8xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center"></div>
-            
-            <div id="captcha-container" class="hidden my-4 h-24 flex items-center justify-center">
-                <canvas id="captcha-canvas" width="300" height="100"></canvas>
-            </div>
+<!-- Practice Screen -->
+<div id="practice-screen" class="hidden relative">
+<!-- Home Button (Visible in both modes) -->
+<button id="practice-home-button" class="absolute top-0 left-0 text-white bg-slate-600/50 hover:bg-slate-700/70 rounded-full p-2 m-2">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+</button>
+<div id="wrong-attempts-display" class="absolute top-0 right-0 text-red-500 font-bold text-lg text-shadow m-2 p-2"></div>
+<div id="round-counter" class="text-white text-shadow font-bold text-lg mb-4 h-6"></div>
+<div id="number-display" class="font-digital text-6xl sm:text-8xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center"></div>
+<div class="flex items-stretch justify-center space-x-2">
+<!-- Cleaned up Single Input Field -->
+<input type="text" id="input-field" class="flex-grow w-2/3 text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md" placeholder="####" maxlength="4" disabled>
+<button id="submit-button" class="w-1/3 bg-green-600 text-white font-bold rounded-lg shadow-lg" disabled>확인</button>
+</div>
+<div id="feedback-display" class="mt-4 h-6 text-xl font-bold text-shadow"></div>
+</div>
 
-            <div class="flex items-stretch justify-center space-x-2">
-                <input type="text" id="input-field" class="flex-grow w-2/3 text-center text-3xl p-3 border-2 border-slate-300 rounded-lg shadow-md" placeholder="####" maxlength="4" disabled>
-                <button id="submit-button" class="w-1/3 bg-green-600 text-white font-bold rounded-lg shadow-lg" disabled>확인</button>
-            </div>
-            <div id="feedback-display" class="mt-4 h-6 text-xl font-bold text-shadow"></div>
-        </div>
+<!-- Department Input Screen -->
+<div id="department-screen" class="hidden">
+<h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">기록 등록</h1>
+<p class="text-white text-shadow mb-4">랭킹에 표시될 학과를 선택하세요.</p>
+<div class="relative mb-2">
+<input type="text" id="department-search" class="w-full text-lg p-3 pl-10 border-2 border-slate-300 rounded-lg shadow-md bg-white" placeholder="학과 검색...">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+<svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+</div>
+</div>
+<select id="department-select" class="w-full text-center text-lg p-3 border-2 border-slate-300 rounded-lg shadow-md bg-white" size="5">
+<option value="">-- 학과를 선택하세요 --</option>
+<optgroup label="융합자유전공대학"><option value="자유전공학부">자유전공학부</option></optgroup>
+<optgroup label="인문대학"><option value="국어국문학과">국어국문학과</option><option value="영어영문학과">영어영문학과</option><option value="독어독문학과">독어독문학과</option><option value="불어불문학과">불어불문학과</option><option value="일본지역문화학과">일본지역문화학과</option><option value="중어중국학과">중어중국학과</option></optgroup>
+<optgroup label="자연과학대학"><option value="수학과">수학과</option><option value="물리학과">물리학과</option><option value="화학과">화학과</option><option value="패션산업학과">패션산업학과</option><option value="해양학과">해양학과</option></optgroup>
+<optgroup label="사회과학대학"><option value="사회복지학과">사회복지학과</option><option value="미디어커뮤니케이션학과">미디어커뮤니케이션학과</option><option value="문헌정보학과">문헌정보학과</option><option value="창의인재개발학과">창의인재개발학과</option></optgroup>
+<optgroup label="글로벌정경대학"><option value="행정학과">행정학과</option><option value="정치외교학과">정치외교학과</option><option value="경제학과">경제학과</option><option value="Global Trade & Service학부">Global Trade & Service학부</option><option value="소비자학과">소비자학과</option></optgroup>
+<optgroup label="공과대학"><option value="기계공학과">기계공학과</option><option value="전기공학과">전기공학과</option><option value="전자공학부">전자공학부</option><option value="산업경영공학과">산업경영공학과</option><option value="신소재공학과">신소재공학과</option><option value="안전공학과">안전공학과</option><option value="에너지화학공학과">에너지화학공학과</option><option value="바이오-로봇시스템공학과">바이오-로봇시스템공학과</option></optgroup>
+<optgroup label="정보기술대학"><option value="컴퓨터공학부">컴퓨터공학부</option><option value="정보통신공학과">정보통신공학과</option><option value="임베디드시스템공학과">임베디드시스템공학과</option></optgroup>
+<optgroup label="경영대학"><option value="경영학부">경영학부</option><option value="데이터과학과">데이터과학과</option><option value="세무회계학과">세무회계학과</option></optgroup>
+<optgroup label="예술체육대학"><option value="조형예술학부(한국화)">조형예술학부(한국화)</option><option value="조형예술학부(서양화)">조형예술학부(서양화)</option><option value="디자인학부">디자인학부</option><option value="공연예술학과">공연예술학과</option><option value="스포츠과학과">스포츠과학과</option><option value="운동건강학부">운동건강학부</option></optgroup>
+<optgroup label="사범대학"><option value="국어교육과">국어교육과</option><option value="영어교육과">영어교육과</option><option value="일어교육과">일어교육과</option><option value="수학교육과">수학교육과</option><option value="체육교육과">체육교육과</option><option value="유아교육과">유아교육과</option><option value="역사교육과">역사교육과</option><option value="윤리교육과">윤리교육과</option></optgroup>
+<optgroup label="도시과학대학"><option value="도시행정학과">도시행정학과</option><option value="도시환경공학부(건설환경)">도시환경공학부(건설환경)</option><option value="도시환경공학부(환경공학)">도시환경공학부(환경공학)</option><option value="도시공학과">도시공학과</option><option value="도시건축학부">도시건축학부</option></optgroup>
+<optgroup label="생명과학기술대학"><option value="생명과학부(생명과학)">생명과학부(생명과학)</option><option value="생명과학부(분자의생명)">생명과학부(분자의생명)</option><option value="생명공학부(생명공학)">생명공학부(생명공학)</option><option value="생명공학부(나노바이오)">생명공학부(나노바이오)</option></optgroup>
+<optgroup label="동북아국제통상물류학부"><option value="동북아국제통상전공">동북아국제통상전공</option><option value="스마트물류공학전공">스마트물류공학전공</option></optgroup>
+<optgroup label="법학부"><option value="법학부">법학부</option></optgroup>
+</select>
+<button id="submit-score-button" class="w-full mt-4 bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-green-700" disabled>기록 제출 및 랭킹 보기</button>
+</div>
 
-        <div id="department-screen" class="hidden">
-            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">기록 등록</h1>
-            <p class="text-white text-shadow mb-4">랭킹에 표시될 학과를 선택하세요.</p>
-            <div class="relative mb-2">
-                <input type="text" id="department-search" class="w-full text-lg p-3 pl-10 border-2 border-slate-300 rounded-lg shadow-md bg-white" placeholder="학과 검색...">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </div>
-            </div>
-            <select id="department-select" class="w-full text-center text-lg p-3 border-2 border-slate-300 rounded-lg shadow-md bg-white" size="5">
-                 <option value="">-- 학과를 선택하세요 --</option>
-                 <optgroup label="융합자유전공대학"><option value="자유전공학부">자유전공학부</option></optgroup>
-                 <optgroup label="인문대학"><option value="국어국문학과">국어국문학과</option><option value="영어영문학과">영어영문학과</option><option value="독어독문학과">독어독문학과</option><option value="불어불문학과">불어불문학과</option><option value="일본지역문화학과">일본지역문화학과</option><option value="중어중국학과">중어중국학과</option></optgroup>
-                 <optgroup label="자연과학대학"><option value="수학과">수학과</option><option value="물리학과">물리학과</option><option value="화학과">화학과</option><option value="패션산업학과">패션산업학과</option><option value="해양학과">해양학과</option></optgroup>
-                 <optgroup label="사회과학대학"><option value="사회복지학과">사회복지학과</option><option value="미디어커뮤니케이션학과">미디어커뮤니케이션학과</option><option value="문헌정보학과">문헌정보학과</option><option value="창의인재개발학과">창의인재개발학과</option></optgroup>
-                 <optgroup label="글로벌정경대학"><option value="행정학과">행정학과</option><option value="정치외교학과">정치외교학과</option><option value="경제학과">경제학과</option><option value="Global Trade & Service학부">Global Trade & Service학부</option><option value="소비자학과">소비자학과</option></optgroup>
-                 <optgroup label="공과대학"><option value="기계공학과">기계공학과</option><option value="전기공학과">전기공학과</option><option value="전자공학부">전자공학부</option><option value="산업경영공학과">산업경영공학과</option><option value="신소재공학과">신소재공학과</option><option value="안전공학과">안전공학과</option><option value="에너지화학공학과">에너지화학공학과</option><option value="바이오-로봇시스템공학과">바이오-로봇시스템공학과</option></optgroup>
-                 <optgroup label="정보기술대학"><option value="컴퓨터공학부">컴퓨터공학부</option><option value="정보통신공학과">정보통신공학과</option><option value="임베디드시스템공학과">임베디드시스템공학과</option></optgroup>
-                 <optgroup label="경영대학"><option value="경영학부">경영학부</option><option value="데이터과학과">데이터과학과</option><option value="세무회계학과">세무회계학과</option></optgroup>
-                 <optgroup label="예술체육대학"><option value="조형예술학부(한국화)">조형예술학부(한국화)</option><option value="조형예술학부(서양화)">조형예술학부(서양화)</option><option value="디자인학부">디자인학부</option><option value="공연예술학과">공연예술학과</option><option value="스포츠과학과">스포츠과학과</option><option value="운동건강학부">운동건강학부</option></optgroup>
-                 <optgroup label="사범대학"><option value="국어교육과">국어교육과</option><option value="영어교육과">영어교육과</option><option value="일어교육과">일어교육과</option><option value="수학교육과">수학교육과</option><option value="체육교육과">체육교육과</option><option value="유아교육과">유아교육과</option><option value="역사교육과">역사교육과</option><option value="윤리교육과">윤리교육과</option></optgroup>
-                 <optgroup label="도시과학대학"><option value="도시행정학과">도시행정학과</option><option value="도시환경공학부(건설환경)">도시환경공학부(건설환경)</option><option value="도시환경공학부(환경공학)">도시환경공학부(환경공학)</option><option value="도시공학과">도시공학과</option><option value="도시건축학부">도시건축학부</option></optgroup>
-                 <optgroup label="생명과학기술대학"><option value="생명과학부(생명과학)">생명과학부(생명과학)</option><option value="생명과학부(분자의생명)">생명과학부(분자의생명)</option><option value="생명공학부(생명공학)">생명공학부(생명공학)</option><option value="생명공학부(나노바이오)">생명공학부(나노바이오)</option></optgroup>
-                 <optgroup label="동북아국제통상물류학부"><option value="동북아국제통상전공">동북아국제통상전공</option><option value="스마트물류공학전공">스마트물류공학전공</option></optgroup>
-                 <optgroup label="법학부"><option value="법학부">법학부</option></optgroup>
-            </select>
-            <button id="submit-score-button" class="w-full mt-4 bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-green-700" disabled>기록 제출 및 랭킹 보기</button>
-        </div>
+<!-- Leaderboard Screen -->
+<div id="leaderboard-screen" class="hidden">
+<h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-4">랭킹</h1>
+<div class="flex justify-center mb-4 border-b border-slate-600">
+<button id="today-ranking-tab" class="flex-1 pb-2 font-bold transition-colors duration-200">오늘의 랭킹</button>
+<button id="hof-tab" class="flex-1 pb-2 font-bold transition-colors duration-200">명예의 전당</button>
+</div>
+<div id="today-ranking-view"></div>
+<div id="hof-view" class="hidden"></div>
+<button id="leaderboard-home-button" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700">처음으로 돌아가기</button>
+</div>
 
-        <div id="leaderboard-screen" class="hidden">
-            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-4">랭킹</h1>
-            <div class="flex justify-center mb-4 border-b border-slate-600">
-                <button id="today-ranking-tab" class="flex-1 pb-2 font-bold transition-colors duration-200">오늘의 랭킹</button>
-                <button id="hof-tab" class="flex-1 pb-2 font-bold transition-colors duration-200">명예의 전당</button>
-            </div>
-            <div id="today-ranking-view"></div>
-            <div id="hof-view" class="hidden"></div>
-            <button id="leaderboard-home-button" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700">처음으로 돌아가기</button>
-        </div>
+<!-- Personal Records Screen -->
+<div id="personal-records-screen" class="hidden">
+<h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">개인 기록</h1>
+<div id="personal-records-list" class="space-y-2 text-left"></div>
+<button id="personal-records-home-button" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700">처음으로 돌아가기</button>
+</div>
+</div>
 
-        <div id="personal-records-screen" class="hidden">
-            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">개인 기록</h1>
-            <div id="personal-records-list" class="space-y-2 text-left"></div>
-            <button id="personal-records-home-button" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700">처음으로 돌아가기</button>
-        </div>
-    </div>
+<script>
+// --- Supabase Setup ---
+const SUPABASE_URL = 'https://본인의프로젝트주소.supabase.co'; 
+const SUPABASE_KEY = '본인의_ANON_PUBLIC_KEY'; 
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    <script>
-        // --- Supabase Setup ---
-        const SUPABASE_URL = 'https://본인의프로젝트주소.supabase.co'; 
-        const SUPABASE_KEY = '본인의_ANON_PUBLIC_KEY'; 
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// --- DOM Elements ---
+const startScreen = document.getElementById('start-screen');
+const practiceScreen = document.getElementById('practice-screen');
+const departmentScreen = document.getElementById('department-screen');
+const leaderboardScreen = document.getElementById('leaderboard-screen');
+const personalRecordsScreen = document.getElementById('personal-records-screen');
+const visitorCountDisplay = document.getElementById('visitor-count');
+const todayVisitorCountDisplay = document.getElementById('today-visitor-count');
+const averageSpeedDisplay = document.getElementById('average-speed');
+const viewRankingButton = document.getElementById('view-ranking-button');
+const viewPersonalRecordsButton = document.getElementById('view-personal-records-button');
+const departmentSelect = document.getElementById('department-select');
+const departmentSearch = document.getElementById('department-search');
+const submitScoreButton = document.getElementById('submit-score-button');
+const leaderboardHomeButton = document.getElementById('leaderboard-home-button');
+const personalRecordsHomeButton = document.getElementById('personal-records-home-button');
+const mode10Button = document.getElementById('mode-10-button');
+const modeInfiniteButton = document.getElementById('mode-infinite-button');
+const roundCounter = document.getElementById('round-counter');
+const numberDisplay = document.getElementById('number-display');
+const inputField = document.getElementById('input-field');
+const submitButton = document.getElementById('submit-button');
+const feedbackDisplay = document.getElementById('feedback-display');
+const wrongAttemptsDisplay = document.getElementById('wrong-attempts-display');
+const practiceHomeButton = document.getElementById('practice-home-button');
+const todayRankingTab = document.getElementById('today-ranking-tab');
+const hofTab = document.getElementById('hof-tab');
+const todayRankingView = document.getElementById('today-ranking-view');
+const hofView = document.getElementById('hof-view');
+const personalRecordsList = document.getElementById('personal-records-list');
 
-        // --- DOM Elements ---
-        const startScreen = document.getElementById('start-screen');
-        const practiceScreen = document.getElementById('practice-screen');
-        const departmentScreen = document.getElementById('department-screen');
-        const leaderboardScreen = document.getElementById('leaderboard-screen');
-        const personalRecordsScreen = document.getElementById('personal-records-screen');
-        const visitorCountDisplay = document.getElementById('visitor-count');
-        const todayVisitorCountDisplay = document.getElementById('today-visitor-count');
-        const averageSpeedDisplay = document.getElementById('average-speed');
-        const viewRankingButton = document.getElementById('view-ranking-button');
-        const viewPersonalRecordsButton = document.getElementById('view-personal-records-button');
-        const departmentSelect = document.getElementById('department-select');
-        const departmentSearch = document.getElementById('department-search');
-        const submitScoreButton = document.getElementById('submit-score-button');
-        const leaderboardHomeButton = document.getElementById('leaderboard-home-button');
-        const personalRecordsHomeButton = document.getElementById('personal-records-home-button');
-        const mode10Button = document.getElementById('mode-10-button');
-        const modeInfiniteButton = document.getElementById('mode-infinite-button');
-        const roundCounter = document.getElementById('round-counter');
-        // 변경된 DOM: 숫자 텍스트 표시와 캔버스 컨테이너를 분리
-        const countdownDisplay = document.getElementById('countdown-display');
-        const captchaContainer = document.getElementById('captcha-container');
-        const captchaCanvas = document.getElementById('captcha-canvas');
-        
-        const inputField = document.getElementById('input-field');
-        const submitButton = document.getElementById('submit-button');
-        const feedbackDisplay = document.getElementById('feedback-display');
-        const wrongAttemptsDisplay = document.getElementById('wrong-attempts-display');
-        const practiceHomeButton = document.getElementById('practice-home-button');
-        const todayRankingTab = document.getElementById('today-ranking-tab');
-        const hofTab = document.getElementById('hof-tab');
-        const todayRankingView = document.getElementById('today-ranking-view');
-        const hofView = document.getElementById('hof-view');
-        const personalRecordsList = document.getElementById('personal-records-list');
+let gameMode = null, currentNumber = '', isFirstRound = true;
+let roundLimit = 10, currentRound = 0, correctAnswers = 0, wrongAnswers = 0;
+let timerStart = 0, timeRecords = [];
+let lastGameResult = {};
 
-        let gameMode = null, currentNumber = '', isFirstRound = true;
-        let roundLimit = 10, currentRound = 0, correctAnswers = 0, wrongAnswers = 0;
-        let timerStart = 0, timeRecords = [];
-        let lastGameResult = {};
+async function initializeMainScreenStats() {
+try {
+// 1. 방문 기록 추가
+await supabaseClient.from('visitors').insert([{}]);
 
-        async function initializeMainScreenStats() {
-            try {
-                // 1. 방문 기록 추가
-                await supabaseClient.from('visitors').insert([{}]);
+// 2. 총 방문자 수 조회
+const { count: vCount, error: vErr } = await supabaseClient
+.from('visitors')
+.select('*', { count: 'exact', head: true });
+if (!vErr && visitorCountDisplay) visitorCountDisplay.textContent = vCount || 0;
 
-                // 2. 총 방문자 수 조회
-                const { count: vCount, error: vErr } = await supabaseClient
-                    .from('visitors')
-                    .select('*', { count: 'exact', head: true });
-                if (!vErr && visitorCountDisplay) visitorCountDisplay.textContent = vCount || 0;
+// 3. 오늘 방문자 수 조회 (KST 기준을 위해 날짜 조정 가능하나, 단순 날짜 검색 수행)
+const startOfToday = new Date();
+startOfToday.setHours(0,0,0,0);
+const { count: tCount, error: tErr } = await supabaseClient
+.from('visitors')
+.select('*', { count: 'exact', head: true })
+.gte('created_at', startOfToday.toISOString());
+if (!tErr && todayVisitorCountDisplay) todayVisitorCountDisplay.textContent = tCount || 0;
 
-                // 3. 오늘 방문자 수 조회
-                const startOfToday = new Date();
-                startOfToday.setHours(0,0,0,0);
-                const { count: tCount, error: tErr } = await supabaseClient
-                    .from('visitors')
-                    .select('*', { count: 'exact', head: true })
-                    .gte('created_at', startOfToday.toISOString());
-                if (!tErr && todayVisitorCountDisplay) todayVisitorCountDisplay.textContent = tCount || 0;
+// 4. 전체 평균 속도 조회
+const { data: lbData, error: lbErr } = await supabaseClient
+.from('leaderboard')
+.select('avg_speed');
 
-                // 4. 전체 평균 속도 조회
-                const { data: lbData, error: lbErr } = await supabaseClient
-                    .from('leaderboard')
-                    .select('avg_speed');
-                
-                if (!lbErr && lbData && lbData.length > 0) {
-                    const total = lbData.reduce((s, r) => s + r.avg_speed, 0);
-                    averageSpeedDisplay.textContent = (total / lbData.length).toFixed(4);
-                } else {
-                    averageSpeedDisplay.textContent = '0.0000';
-                }
-            } catch (e) {
-                console.error("통계 로딩 실패:", e);
-            }
-        }
+if (!lbErr && lbData && lbData.length > 0) {
+const total = lbData.reduce((s, r) => s + r.avg_speed, 0);
+averageSpeedDisplay.textContent = (total / lbData.length).toFixed(4);
+} else {
+averageSpeedDisplay.textContent = '0.0000';
+}
+} catch (e) {
+console.error("통계 로딩 실패:", e);
+}
+}
 
-        function setActiveTab(activeTab) {
-            if (activeTab === 'today') {
-                todayRankingView.classList.remove('hidden');
-                hofView.classList.add('hidden');
-                todayRankingTab.className = "flex-1 pb-2 font-bold transition-colors duration-200 text-amber-400 border-b-2 border-amber-400";
-                hofTab.className = "flex-1 pb-2 font-bold transition-colors duration-200 text-slate-400";
-            } else {
-                hofView.classList.remove('hidden');
-                todayRankingView.classList.add('hidden');
-                hofTab.className = "flex-1 pb-2 font-bold transition-colors duration-200 text-amber-400 border-b-2 border-amber-400";
-                todayRankingTab.className = "flex-1 pb-2 font-bold transition-colors duration-200 text-slate-400";
-            }
-        }
+function setActiveTab(activeTab) {
+if (activeTab === 'today') {
+todayRankingView.classList.remove('hidden');
+hofView.classList.add('hidden');
+todayRankingTab.className = "flex-1 pb-2 font-bold transition-colors duration-200 text-amber-400 border-b-2 border-amber-400";
+hofTab.className = "flex-1 pb-2 font-bold transition-colors duration-200 text-slate-400";
+} else {
+hofView.classList.remove('hidden');
+todayRankingView.classList.add('hidden');
+hofTab.className = "flex-1 pb-2 font-bold transition-colors duration-200 text-amber-400 border-b-2 border-amber-400";
+todayRankingTab.className = "flex-1 pb-2 font-bold transition-colors duration-200 text-slate-400";
+}
+}
 
-        async function fetchAndShowLeaderboard() {
-            startScreen.classList.add('hidden');
-            departmentScreen.classList.add('hidden');
-            leaderboardScreen.classList.remove('hidden');
-            setActiveTab('today');
-            todayRankingView.innerHTML = `<p class="text-white">랭킹 데이터를 불러오는 중...</p>`;
-            
-            const { data, error } = await supabaseClient.from('leaderboard').select('*').order('created_at', { ascending: false });
-            if (error) return;
+async function fetchAndShowLeaderboard() {
+startScreen.classList.add('hidden');
+departmentScreen.classList.add('hidden');
+leaderboardScreen.classList.remove('hidden');
+setActiveTab('today');
+todayRankingView.innerHTML = `<p class="text-white">랭킹 데이터를 불러오는 중...</p>`;
 
-            todayRankingView.innerHTML = '';
-            hofView.innerHTML = '';
-            
-            const now = new Date();
-            const todayStr = now.toISOString().split('T')[0];
-            const todayData = data.filter(r => r.created_at.startsWith(todayStr)).sort((a,b) => a.avg_speed - b.avg_speed).slice(0, 10);
-            
-            if (todayData.length > 0) {
-                todayData.forEach((r, i) => {
-                    const div = document.createElement('div');
-                    div.className = "flex justify-between bg-black/30 p-3 mb-2 rounded-lg text-white";
-                    div.innerHTML = `<span>${i+1}위 ${r.department}</span><span class="font-digital text-amber-400">${r.avg_speed.toFixed(4)}s</span>`;
-                    todayRankingView.appendChild(div);
-                });
-            } else {
-                todayRankingView.innerHTML = `<p class="text-white">오늘 등록된 기록이 없습니다.</p>`;
-            }
+const { data, error } = await supabaseClient.from('leaderboard').select('*').order('created_at', { ascending: false });
+if (error) return;
 
-            const allTime = [...data].sort((a,b) => a.avg_speed - b.avg_speed).slice(0, 3);
-            if (allTime.length > 0) {
-                const podium = document.createElement('div');
-                podium.className = "flex justify-center items-end gap-2 mt-4 h-48";
-                allTime.forEach((r, i) => {
-                    const step = document.createElement('div');
-                    const h = i === 0 ? 'h-40 bg-amber-600/50' : i === 1 ? 'h-32 bg-slate-500/50' : 'h-24 bg-orange-800/50';
-                    step.className = `w-1/3 ${h} rounded-t-lg flex flex-col items-center justify-center text-white p-2`;
-                    step.innerHTML = `<span class="text-2xl">${i===0?'🥇':i===1?'🥈':'🥉'}</span><span class="text-xs truncate w-full text-center">${r.department}</span><span class="text-sm font-bold">${r.avg_speed.toFixed(3)}s</span>`;
-                    podium.appendChild(step);
-                });
-                hofView.appendChild(podium);
-            } else {
-                hofView.innerHTML = `<p class="text-white">기록이 없습니다.</p>`;
-            }
-        }
+todayRankingView.innerHTML = '';
+hofView.innerHTML = '';
 
-        // --- 캡챠 그리기 함수 ---
-        function drawCaptcha(text) {
-            const ctx = captchaCanvas.getContext('2d');
-            const width = captchaCanvas.width;
-            const height = captchaCanvas.height;
+const now = new Date();
+const todayStr = now.toISOString().split('T')[0];
+const todayData = data.filter(r => r.created_at.startsWith(todayStr)).sort((a,b) => a.avg_speed - b.avg_speed).slice(0, 10);
 
-            // 1. 배경 초기화
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = '#fff';
-            ctx.fillRect(0, 0, width, height);
+if (todayData.length > 0) {
+todayData.forEach((r, i) => {
+const div = document.createElement('div');
+div.className = "flex justify-between bg-black/30 p-3 mb-2 rounded-lg text-white";
+div.innerHTML = `<span>${i+1}위 ${r.department}</span><span class="font-digital text-amber-400">${r.avg_speed.toFixed(4)}s</span>`;
+todayRankingView.appendChild(div);
+});
+} else {
+todayRankingView.innerHTML = `<p class="text-white">오늘 등록된 기록이 없습니다.</p>`;
+}
 
-            // 2. 방해선 그리기 (노이즈)
-            for (let i = 0; i < 7; i++) {
-                ctx.strokeStyle = `rgba(${Math.random()*150},${Math.random()*150},${Math.random()*150},0.6)`;
-                ctx.lineWidth = 1 + Math.random();
-                ctx.beginPath();
-                ctx.moveTo(Math.random() * width, Math.random() * height);
-                ctx.lineTo(Math.random() * width, Math.random() * height);
-                ctx.stroke();
-            }
+const allTime = [...data].sort((a,b) => a.avg_speed - b.avg_speed).slice(0, 3);
+if (allTime.length > 0) {
+const podium = document.createElement('div');
+podium.className = "flex justify-center items-end gap-2 mt-4 h-48";
+allTime.forEach((r, i) => {
+const step = document.createElement('div');
+const h = i === 0 ? 'h-40 bg-amber-600/50' : i === 1 ? 'h-32 bg-slate-500/50' : 'h-24 bg-orange-800/50';
+step.className = `w-1/3 ${h} rounded-t-lg flex flex-col items-center justify-center text-white p-2`;
+step.innerHTML = `<span class="text-2xl">${i===0?'🥇':i===1?'🥈':'🥉'}</span><span class="text-xs truncate w-full text-center">${r.department}</span><span class="text-sm font-bold">${r.avg_speed.toFixed(3)}s</span>`;
+podium.appendChild(step);
+});
+hofView.appendChild(podium);
+} else {
+hofView.innerHTML = `<p class="text-white">기록이 없습니다.</p>`;
+}
+}
 
-            // 3. 텍스트 그리기 (회전 및 위치 랜덤화)
-            ctx.font = 'bold 50px "Noto Sans KR"';
-            ctx.textBaseline = 'middle';
-            
-            // 텍스트 전체 너비 대략 계산 후 중앙 정렬
-            const totalWidthEstimate = text.length * 40; 
-            const startX = (width - totalWidthEstimate) / 2;
+function startGame(mode) {
+gameMode = mode; currentRound = 0; timeRecords = []; wrongAnswers = 0; isFirstRound = true;
+startScreen.classList.add('hidden');
+practiceScreen.classList.remove('hidden');
+// 홈 버튼 항상 표시
+practiceHomeButton.classList.remove('hidden');
+wrongAttemptsDisplay.textContent = `틀린 횟수: 0`;
+startNewRound();
+}
 
-            for (let i = 0; i < text.length; i++) {
-                ctx.save();
-                // 글자 위치 지정
-                const x = startX + (i * 45) + 20;
-                const y = height / 2 + (Math.random() * 10 - 5);
-                
-                // 회전 각도 (-0.2 ~ 0.2 라디안)
-                const angle = (Math.random() - 0.5) * 0.4;
-                
-                ctx.translate(x, y);
-                ctx.rotate(angle);
-                
-                ctx.fillStyle = `rgb(${Math.floor(Math.random()*100)}, ${Math.floor(Math.random()*100)}, ${Math.floor(Math.random()*100)})`;
-                ctx.fillText(text[i], -10, 0); // 중심 보정
-                ctx.restore();
-            }
+function startNewRound() {
+if (gameMode === '10rounds' && currentRound >= roundLimit) {
+showResults();
+return;
+}
+currentRound++;
+roundCounter.textContent = gameMode === '10rounds' ? `${currentRound} / ${roundLimit}` : `라운드 ${currentRound}`;
+inputField.value = ''; inputField.disabled = true; feedbackDisplay.textContent = '';
 
-            // 4. 점 노이즈
-            for (let i = 0; i < 30; i++) {
-                ctx.fillStyle = `rgba(0,0,0,0.2)`;
-                ctx.beginPath();
-                ctx.arc(Math.random() * width, Math.random() * height, 1, 0, 2 * Math.PI);
-                ctx.fill();
-            }
-        }
+let count = isFirstRound ? 3 : 1;
+const timer = setInterval(() => {
+numberDisplay.textContent = count;
+numberDisplay.style.color = 'white';
+if (count <= 0) {
+clearInterval(timer);
+currentNumber = String(Math.floor(Math.random() * 9000) + 1000);
+numberDisplay.textContent = currentNumber;
+numberDisplay.style.color = '#FBBF24';
+inputField.disabled = false;
+inputField.focus();
+timerStart = Date.now();
+isFirstRound = false;
+}
+count--;
+}, 1000);
+}
 
-        function startGame(mode) {
-            gameMode = mode; currentRound = 0; timeRecords = []; wrongAnswers = 0; isFirstRound = true;
-            startScreen.classList.add('hidden');
-            practiceScreen.classList.remove('hidden');
-            practiceHomeButton.classList.remove('hidden');
-            wrongAttemptsDisplay.textContent = `틀린 횟수: 0`;
-            startNewRound();
-        }
+function checkAnswer() {
+if (inputField.disabled || !inputField.value) return;
+if (inputField.value === currentNumber) {
+const diff = (Date.now() - timerStart) / 1000;
+if (gameMode === '10rounds') timeRecords.push(diff);
+feedbackDisplay.textContent = `정답! (${diff.toFixed(4)}초)`;
+feedbackDisplay.style.color = '#10B981';
+inputField.disabled = true;
+setTimeout(startNewRound, 500);
+} else {
+wrongAnswers++;
+wrongAttemptsDisplay.textContent = `틀린 횟수: ${wrongAnswers}`;
+feedbackDisplay.textContent = '다시 입력하세요!';
+feedbackDisplay.style.color = '#EF4444';
+inputField.value = '';
+}
+}
 
-        function startNewRound() {
-            if (gameMode === '10rounds' && currentRound >= roundLimit) {
-                showResults();
-                return;
-            }
-            currentRound++;
-            roundCounter.textContent = gameMode === '10rounds' ? `${currentRound} / ${roundLimit}` : `라운드 ${currentRound}`;
-            
-            // 입력창 비활성화 및 초기화
-            inputField.value = ''; inputField.disabled = true; feedbackDisplay.textContent = '';
-            
-            // 캡챠 숨기고 카운트다운 표시
-            captchaContainer.classList.add('hidden');
-            countdownDisplay.classList.remove('hidden');
+function showResults() {
+practiceScreen.classList.add('hidden');
+const avg = timeRecords.length > 0 ? timeRecords.reduce((a,b) => a+b, 0) / timeRecords.length : 0;
+lastGameResult = { avgSpeed: avg };
 
-            let count = isFirstRound ? 3 : 1;
-            
-            // 카운트다운 시작
-            const timer = setInterval(() => {
-                countdownDisplay.textContent = count;
-                
-                if (count <= 0) {
-                    clearInterval(timer);
-                    // 숫자 생성
-                    currentNumber = String(Math.floor(Math.random() * 9000) + 1000);
-                    
-                    // 화면 전환: 카운트다운 숨김 -> 캡챠 표시
-                    countdownDisplay.classList.add('hidden');
-                    captchaContainer.classList.remove('hidden');
-                    
-                    // 캡챠 그리기
-                    drawCaptcha(currentNumber);
-                    
-                    inputField.disabled = false;
-                    inputField.focus();
-                    timerStart = Date.now();
-                    isFirstRound = false;
-                }
-                count--;
-            }, 1000);
-        }
+const pb = JSON.parse(localStorage.getItem('personalBests')) || [];
+pb.push({ speed: avg, date: new Date().toISOString() });
+localStorage.setItem('personalBests', JSON.stringify(pb));
 
-        function checkAnswer() {
-            if (inputField.disabled || !inputField.value) return;
-            if (inputField.value === currentNumber) {
-                const diff = (Date.now() - timerStart) / 1000;
-                if (gameMode === '10rounds') timeRecords.push(diff);
-                feedbackDisplay.textContent = `정답! (${diff.toFixed(4)}초)`;
-                feedbackDisplay.style.color = '#10B981';
-                inputField.disabled = true;
-                setTimeout(startNewRound, 500);
-            } else {
-                wrongAnswers++;
-                wrongAttemptsDisplay.textContent = `틀린 횟수: ${wrongAnswers}`;
-                feedbackDisplay.textContent = '다시 입력하세요!';
-                feedbackDisplay.style.color = '#EF4444';
-                inputField.value = '';
-                // 틀렸을 때 캡챠 다시 그리기 (옵션, 원하면 주석 해제)
-                // drawCaptcha(currentNumber); 
-            }
-        }
+departmentScreen.classList.remove('hidden');
+}
 
-        function showResults() {
-            practiceScreen.classList.add('hidden');
-            const avg = timeRecords.length > 0 ? timeRecords.reduce((a,b) => a+b, 0) / timeRecords.length : 0;
-            lastGameResult = { avgSpeed: avg };
-            
-            const pb = JSON.parse(localStorage.getItem('personalBests')) || [];
-            pb.push({ speed: avg, date: new Date().toISOString() });
-            localStorage.setItem('personalBests', JSON.stringify(pb));
+async function submitScore() {
+const dept = departmentSelect.value;
+if (!dept) return;
+submitScoreButton.disabled = true;
+submitScoreButton.textContent = "기록 저장 중...";
+await supabaseClient.from('leaderboard').insert([{ department: dept, avg_speed: lastGameResult.avgSpeed }]);
+fetchAndShowLeaderboard();
+}
 
-            departmentScreen.classList.remove('hidden');
-        }
+// --- Event Listeners ---
+document.addEventListener('DOMContentLoaded', initializeMainScreenStats);
+mode10Button.onclick = () => startGame('10rounds');
+modeInfiniteButton.onclick = () => startGame('infinite');
+viewRankingButton.onclick = fetchAndShowLeaderboard;
+submitScoreButton.onclick = submitScore;
 
-        async function submitScore() {
-            const dept = departmentSelect.value;
-            if (!dept) return;
-            submitScoreButton.disabled = true;
-            submitScoreButton.textContent = "기록 저장 중...";
-            await supabaseClient.from('leaderboard').insert([{ department: dept, avg_speed: lastGameResult.avgSpeed }]);
-            fetchAndShowLeaderboard();
-        }
+// 홈으로 이동 로직 (새로고침 방식)
+const goHome = () => location.reload();
+leaderboardHomeButton.onclick = goHome;
+personalRecordsHomeButton.onclick = goHome;
+practiceHomeButton.onclick = goHome;
 
-        // --- Event Listeners ---
-        document.addEventListener('DOMContentLoaded', initializeMainScreenStats);
-        mode10Button.onclick = () => startGame('10rounds');
-        modeInfiniteButton.onclick = () => startGame('infinite');
-        viewRankingButton.onclick = fetchAndShowLeaderboard;
-        submitScoreButton.onclick = submitScore;
-        
-        const goHome = () => location.reload();
-        leaderboardHomeButton.onclick = goHome;
-        personalRecordsHomeButton.onclick = goHome;
-        practiceHomeButton.onclick = goHome;
-        
-        departmentSelect.onchange = () => submitScoreButton.disabled = !departmentSelect.value;
-        departmentSearch.oninput = (e) => {
-            const term = e.target.value;
-            const options = departmentSelect.querySelectorAll('option');
-            options.forEach(opt => {
-                if (opt.value === "") return;
-                opt.style.display = opt.textContent.includes(term) ? "" : "none";
-            });
-        };
+departmentSelect.onchange = () => submitScoreButton.disabled = !departmentSelect.value;
+departmentSearch.oninput = (e) => {
+const term = e.target.value;
+const options = departmentSelect.querySelectorAll('option');
+options.forEach(opt => {
+if (opt.value === "") return;
+opt.style.display = opt.textContent.includes(term) ? "" : "none";
+});
+};
 
-        inputField.oninput = (e) => e.target.value = e.target.value.replace(/[^0-9]/g, '');
-        inputField.onkeydown = (e) => { if (e.key === 'Enter') checkAnswer(); };
-        submitButton.onclick = checkAnswer;
-        
-        todayRankingTab.onclick = () => setActiveTab('today');
-        hofTab.onclick = () => setActiveTab('hof');
-        
-        viewPersonalRecordsButton.onclick = () => {
-            startScreen.classList.add('hidden');
-            personalRecordsScreen.classList.remove('hidden');
-            const pb = JSON.parse(localStorage.getItem('personalBests')) || [];
-            if (pb.length === 0) {
-                personalRecordsList.innerHTML = `<p class="text-white text-center">아직 기록이 없습니다.</p>`;
-                return;
-            }
-            personalRecordsList.innerHTML = pb.sort((a,b) => a.speed - b.speed).map(r => 
-                `<div class="bg-black/30 p-2 mb-1 rounded text-white flex justify-between items-center">
-                    <span class="text-xs text-gray-300">${new Date(r.date).toLocaleDateString()}</span>
-                    <span class="font-digital text-amber-400 font-bold">${r.speed.toFixed(4)}s</span>
-                </div>`
-            ).join('');
-        };
-    </script>
+inputField.oninput = (e) => e.target.value = e.target.value.replace(/[^0-9]/g, '');
+inputField.onkeydown = (e) => { if (e.key === 'Enter') checkAnswer(); };
+submitButton.onclick = checkAnswer;
+
+todayRankingTab.onclick = () => setActiveTab('today');
+hofTab.onclick = () => setActiveTab('hof');
+
+viewPersonalRecordsButton.onclick = () => {
+startScreen.classList.add('hidden');
+personalRecordsScreen.classList.remove('hidden');
+const pb = JSON.parse(localStorage.getItem('personalBests')) || [];
+if (pb.length === 0) {
+personalRecordsList.innerHTML = `<p class="text-white text-center">아직 기록이 없습니다.</p>`;
+return;
+}
+personalRecordsList.innerHTML = pb.sort((a,b) => a.speed - b.speed).map(r => 
+`<div class="bg-black/30 p-2 mb-1 rounded text-white flex justify-between items-center">
+                   <span class="text-xs text-gray-300">${new Date(r.date).toLocaleDateString()}</span>
+                   <span class="font-digital text-amber-400 font-bold">${r.speed.toFixed(4)}s</span>
+               </div>`
+).join('');
+};
+</script>
 </body>
 </html>
