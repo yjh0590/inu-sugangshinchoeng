@@ -71,16 +71,16 @@
                 <div class="space-y-2">
                     <p class="text-white font-black text-lg text-left ml-1 text-shadow">⏱ 10개 모드 (기록 등록 가능)</p>
                     <div class="flex space-x-2">
-                        <button onclick="startGame('10rounds', 'pc')" class="flex-1 bg-[#0F4C9C] text-black font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90">PC 버전</button>
-                        <button onclick="startGame('10rounds', 'mobile')" class="flex-1 bg-[#4A90E2] text-black font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90">모바일 버전</button>
+                        <button onclick="startGame('10rounds', 'pc')" class="flex-1 bg-[#0F4C9C] text-white font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90">PC 버전</button>
+                        <button onclick="startGame('10rounds', 'mobile')" class="flex-1 bg-[#4A90E2] text-white font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90">모바일 버전</button>
                     </div>
                 </div>
 
                 <div class="space-y-2">
                     <p class="text-white font-black text-lg text-left ml-1 text-shadow">♾ 무한 모드</p>
                     <div class="flex space-x-2">
-                        <button onclick="startGame('infinite', 'pc')" class="flex-1 bg-[#EA3C57] text-black font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90">PC 버전</button>
-                        <button onclick="startGame('infinite', 'mobile')" class="flex-1 bg-[#FF6B6B] text-black font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90">모바일 버전</button>
+                        <button onclick="startGame('infinite', 'pc')" class="flex-1 bg-[#EA3C57] text-white font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90">PC 버전</button>
+                        <button onclick="startGame('infinite', 'mobile')" class="flex-1 bg-[#FF6B6B] text-white font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90">모바일 버전</button>
                     </div>
                 </div>
 
@@ -126,7 +126,7 @@
                             </div>
                             <div>
                                 <p class="font-bold">2. 오류 누적 횟수가 10회가 되면 자동 로그아웃 됩니다.</p>
-                                <p class="text-xs text-gray-600 ml-4">(문자열 오류 총 10회 중 <span id="pc-remain-count">10</span>회 남음)</p>
+                                <p class="text-xs text-gray-500 ml-4">(문자열 오류 총 10회 중 <span id="pc-remain-count">10</span>회 남음)</p>
                                 <p class="text-xs text-gray-500 ml-4 italic">If the string is still incorrect more than 10 times, you will be log out automatically.<br>(Total : 10 Remain : <span id="pc-remain-count-en">10</span>)</p>
                             </div>
                             <div>
@@ -186,120 +186,59 @@
             <input type="text" id="department-search" class="w-full text-lg p-3 mb-2 border-2 border-slate-300 rounded-lg shadow-md bg-white focus:outline-none" placeholder="학과 검색...">
             <select id="department-select" class="w-full text-center text-lg p-3 border-2 border-slate-300 rounded-lg shadow-md bg-white" size="5">
                  <option value="">-- 학과를 선택하세요 --</option>
-                 <optgroup label="융합자유전공대학">
-                    <option value="자유전공학부">자유전공학부</option>
-                 </optgroup>
-                 <optgroup label="첨단분야 특성화">
-                    <option value="데이터과학과">데이터과학과</option>
-                    <option value="에너지화학공학과">에너지화학공학과</option>
-                    <option value="스마트물류공학전공">스마트물류공학전공</option>
-                    <option value="바이오-로봇시스템공학과">바이오-로봇시스템공학과</option>
-                 </optgroup>
-                 <optgroup label="인문대학">
-                    <option value="국어국문학과">국어국문학과</option>
-                    <option value="영어영문학과">영어영문학과</option>
-                    <option value="독어독문학과">독어독문학과</option>
-                    <option value="불어불문학과">불어불문학과</option>
-                    <option value="일본지역문화학과">일본지역문화학과</option>
-                    <option value="중어중국학과">중어중국학과</option>
-                 </optgroup>
-                 <optgroup label="자연과학대학">
-                    <option value="수학과">수학과</option>
-                    <option value="물리학과">물리학과</option>
-                    <option value="화학과">화학과</option>
-                    <option value="패션산업학과">패션산업학과</option>
-                    <option value="해양학과">해양학과</option>
-                 </optgroup>
-                 <optgroup label="사회과학대학">
-                    <option value="사회복지학과">사회복지학과</option>
-                    <option value="미디어커뮤니케이션학과">미디어커뮤니케이션학과</option>
-                    <option value="문헌정보학과">문헌정보학과</option>
-                    <option value="창의인재개발학과">창의인재개발학과</option>
-                 </optgroup>
-                 <optgroup label="글로벌정경대학">
-                    <option value="행정학과">행정학과</option>
-                    <option value="정치외교학과">정치외교학과</option>
-                    <option value="경제학과">경제학과</option>
-                    <option value="Global Trade & Service학부">Global Trade & Service학부</option>
-                    <option value="소비자학과">소비자학과</option>
-                 </optgroup>
-                 <optgroup label="공과대학">
-                    <option value="기계공학과">기계공학과</option>
-                    <option value="전기공학과">전기공학과</option>
-                    <option value="전자공학부">전자공학부</option>
-                    <option value="산업경영공학과">산업경영공학과</option>
-                    <option value="신소재공학과">신소재공학과</option>
-                    <option value="안전공학과">안전공학과</option>
-                    <option value="에너지화학공학과">에너지화학공학과</option>
-                    <option value="바이오-로봇시스템공학과">바이오-로봇시스템공학과</option>
-                 </optgroup>
-                 <optgroup label="정보기술대학">
-                    <option value="컴퓨터공학부">컴퓨터공학부</option>
-                    <option value="정보통신공학과">정보통신공학과</option>
-                    <option value="임베디드시스템공학과">임베디드시스템공학과</option>
-                 </optgroup>
-                 <optgroup label="경영대학">
-                    <option value="경영학부">경영학부</option>
-                    <option value="데이터과학과">데이터과학과</option>
-                    <option value="세무회계학과">세무회계학과</option>
-                 </optgroup>
-                 <optgroup label="예술체육대학">
-                    <option value="조형예술학부 한국화전공">조형예술학부 한국화전공</option>
-                    <option value="조형예술학부 서양화전공">조형예술학부 서양화전공</option>
-                    <option value="디자인학부">디자인학부</option>
-                    <option value="공연예술학과">공연예술학과</option>
-                    <option value="스포츠과학과">스포츠과학과</option>
-                    <option value="운동건강학부">운동건강학부</option>
-                 </optgroup>
-                 <optgroup label="사범대학">
-                    <option value="국어교육과">국어교육과</option>
-                    <option value="영어교육과">영어교육과</option>
-                    <option value="일어교육과">일어교육과</option>
-                    <option value="수학교육과">수학교육과</option>
-                    <option value="체육교육과">체육교육과</option>
-                    <option value="유아교육과">유아교육과</option>
-                    <option value="역사교육과">역사교육과</option>
-                    <option value="윤리교육과">윤리교육과</option>
-                 </optgroup>
-                 <optgroup label="도시과학대학">
-                    <option value="도시행정학과">도시행정학과</option>
-                    <option value="도시환경공학부 건설환경공학전공">도시환경공학부 건설환경공학전공</option>
-                    <option value="도시환경공학부 환경공학전공">도시환경공학부 환경공학전공</option>
-                    <option value="도시공학과">도시공학과</option>
-                    <option value="도시건축학부">도시건축학부</option>
-                 </optgroup>
-                 <optgroup label="생명과학기술대학">
-                    <option value="생명과학부 생명과학전공">생명과학부 생명과학전공</option>
-                    <option value="생명과학부 분자의생명전공">생명과학부 분자의생명전공</option>
-                    <option value="생명공학부 생명공학전공">생명공학부 생명공학전공</option>
-                    <option value="생명공학부 나노바이오공학전공">생명공학부 나노바이오공학전공</option>
-                 </optgroup>
-                 <optgroup label="동북아국제통상물류학부">
-                    <option value="동북아국제통상전공">동북아국제통상전공</option>
-                    <option value="스마트물류공학전공">스마트물류공학전공</option>
-                 </optgroup>
-                 <optgroup label="법학부">
-                    <option value="법학부">법학부</option>
-                 </optgroup>
+                 <option value="자유전공학부">자유전공학부</option>
+                 <option value="데이터과학과">데이터과학과</option>
+                 <option value="컴퓨터공학부">컴퓨터공학부</option>
+                 <option value="정보통신공학과">정보통신공학과</option>
+                 <option value="경영학부">경영학부</option>
+                 <option value="경제학과">경제학과</option>
+                 <option value="행정학과">행정학과</option>
+                 <option value="법학부">법학부</option>
+                 <option value="국어국문학과">국어국문학과</option>
+                 <option value="영어영문학과">영어영문학과</option>
             </select>
             <button id="submit-score-button" class="w-full mt-4 bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-green-700 disabled:bg-gray-400" disabled>기록 제출 및 랭킹 보기</button>
         </div>
 
         <!-- 랭킹 화면 -->
         <div id="leaderboard-screen" class="hidden p-6 max-w-md mx-auto">
-            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-4">랭킹</h1>
+            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-4">실시간 랭킹</h1>
             <div class="flex justify-center mb-4 border-b border-slate-600">
-                <button id="today-ranking-tab" class="flex-1 pb-2 font-bold transition-colors duration-200">오늘의 랭킹</button>
+                <button id="today-ranking-tab" class="flex-1 pb-2 font-bold transition-colors duration-200">오늘의 기록</button>
                 <button id="hof-tab" class="flex-1 pb-2 font-bold transition-colors duration-200">명예의 전당</button>
             </div>
-            <div id="today-ranking-view" class="space-y-2 max-h-80 overflow-y-auto"></div>
-            <div id="hof-view" class="hidden space-y-2 max-h-80 overflow-y-auto"></div>
-            <button onclick="location.reload()" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700 transition-colors">처음으로 돌아가기</button>
+            
+            <!-- 오늘의 랭킹 뷰 (기기별 분리) -->
+            <div id="today-ranking-view" class="space-y-4 max-h-80 overflow-y-auto">
+                <div>
+                    <h3 class="text-black text-left text-sm font-black mb-2 ml-1">🖥 오늘의 순위 (PC)</h3>
+                    <div id="today-pc-list" class="space-y-1"></div>
+                </div>
+                <div>
+                    <h3 class="text-black text-left text-sm font-black mb-2 ml-1">📱 오늘의 순위 (모바일)</h3>
+                    <div id="today-mobile-list" class="space-y-1"></div>
+                </div>
+            </div>
+
+            <!-- 명예의 전당 뷰 -->
+            <div id="hof-view" class="hidden space-y-2 max-h-80 overflow-y-auto pt-2">
+                <h3 class="text-black text-left text-sm font-black mb-2 ml-1">🏆 역대 최고 기록 (Top 3)</h3>
+                <div id="hof-list" class="space-y-1"></div>
+            </div>
+
+            <!-- 하단 정보 영역 -->
+            <div class="mt-6 pt-4 border-t border-white/20">
+                <div id="my-best-display" class="bg-amber-500/20 py-3 px-4 rounded-xl mb-4">
+                    <p class="text-white text-xs opacity-70 mb-1">나의 최고 기록</p>
+                    <p id="my-best-value" class="text-amber-400 font-digital text-2xl font-black">--.----s</p>
+                </div>
+                <button onclick="location.reload()" class="w-full bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700 transition-colors">처음으로 돌아가기</button>
+            </div>
         </div>
 
         <!-- 개인 기록 화면 -->
         <div id="personal-records-screen" class="hidden p-6 max-w-md mx-auto">
-            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">개인 기록</h1>
+            <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-6">나의 연습 기록</h1>
             <div id="personal-records-list" class="space-y-2 text-left max-h-80 overflow-y-auto"></div>
             <button onclick="location.reload()" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700 transition-colors">처음으로 돌아가기</button>
         </div>
@@ -486,40 +425,58 @@
 
         async function fetchAndShowLeaderboard() {
             startScreen.classList.add('hidden');
+            departmentScreen.classList.add('hidden');
             leaderboardScreen.classList.remove('hidden');
             setActiveTab('today');
             
-            const todayView = document.getElementById('today-ranking-view');
-            const hofView = document.getElementById('hof-view');
-            todayView.innerHTML = `<p class="text-white opacity-60">데이터를 불러오는 중...</p>`;
+            const pb = JSON.parse(localStorage.getItem('personalBests')) || [];
+            if (pb.length > 0) {
+                const best = Math.min(...pb.map(r => r.speed));
+                document.getElementById('my-best-value').textContent = `${best.toFixed(4)}s`;
+            }
+
+            const todayPCList = document.getElementById('today-pc-list');
+            const todayMobileList = document.getElementById('today-mobile-list');
+            const hofList = document.getElementById('hof-list');
+
+            [todayPCList, todayMobileList, hofList].forEach(el => el.innerHTML = `<p class="text-black opacity-40 text-xs py-2 font-bold italic">불러오는 중...</p>`);
             
             const { data, error } = await supabaseClient.from('leaderboard').select('*').order('avg_speed', { ascending: true });
             if (error) {
-                todayView.innerHTML = `<p class="text-red-400">데이터 로드 실패</p>`;
+                [todayPCList, todayMobileList, hofList].forEach(el => el.innerHTML = `<p class="text-red-500 text-xs py-2 font-bold">데이터 로드 실패</p>`);
                 return;
             }
 
-            todayView.innerHTML = ''; hofView.innerHTML = '';
             const todayStr = new Date().toISOString().split('T')[0];
-            const todayData = data.filter(r => r.created_at.startsWith(todayStr)).slice(0, 20);
-            const hofData = data.slice(0, 20);
+            const todayData = data.filter(r => r.created_at.startsWith(todayStr));
             
-            const renderList = (list, target) => {
+            const pcTop3 = todayData.filter(r => r.device_type === 'pc').slice(0, 3);
+            const mobileTop3 = todayData.filter(r => r.device_type === 'mobile').slice(0, 3);
+            const hofTop3 = data.slice(0, 3);
+
+            const renderItems = (list, target) => {
+                target.innerHTML = '';
                 if (!list.length) {
-                    target.innerHTML = `<p class="text-white opacity-60">등록된 기록이 없습니다.</p>`;
+                    target.innerHTML = `<p class="text-black opacity-40 text-xs py-2 font-bold italic">기록이 없습니다.</p>`;
                     return;
                 }
                 list.forEach((r, i) => {
                     const div = document.createElement('div');
-                    // 패딩을 줄이고(py-1.5) 너비를 조절하여 콤팩트하게 수정
-                    div.className = "flex justify-between bg-black/30 py-1.5 px-3 rounded-lg text-white text-sm hover:bg-black/40 transition-colors";
-                    div.innerHTML = `<span><span class="font-bold mr-2 text-amber-400">${i+1}위</span> ${r.department}</span><span class="font-digital text-blue-300 font-bold">${r.avg_speed.toFixed(4)}s</span>`;
+                    div.className = "flex justify-between items-center bg-white/90 py-2 px-3 rounded-lg text-black text-sm font-bold shadow-sm";
+                    div.innerHTML = `
+                        <span class="flex items-center">
+                            <span class="w-6 font-black text-blue-600">${i+1}</span>
+                            <span class="truncate max-w-[120px]">${r.department}</span>
+                        </span>
+                        <span class="font-digital text-red-600 font-black">${r.avg_speed.toFixed(4)}s</span>
+                    `;
                     target.appendChild(div);
                 });
             };
 
-            renderList(todayData, todayView);
-            renderList(hofData, hofView);
+            renderItems(pcTop3, todayPCList);
+            renderItems(mobileTop3, todayMobileList);
+            renderItems(hofTop3, hofList);
         }
 
         function setActiveTab(tab) {
@@ -530,11 +487,11 @@
             
             if (tab === 'today') {
                 todayView.classList.remove('hidden'); hofView.classList.add('hidden');
-                todayBtn.className = "flex-1 pb-2 font-bold text-amber-400 border-b-2 border-amber-400";
+                todayBtn.className = "flex-1 pb-2 font-black text-amber-400 border-b-2 border-amber-400";
                 hofBtn.className = "flex-1 pb-2 font-bold text-slate-400 border-b-2 border-transparent";
             } else {
                 hofView.classList.remove('hidden'); todayView.classList.add('hidden');
-                hofBtn.className = "flex-1 pb-2 font-bold text-amber-400 border-b-2 border-amber-400";
+                hofBtn.className = "flex-1 pb-2 font-black text-amber-400 border-b-2 border-amber-400";
                 todayBtn.className = "flex-1 pb-2 font-bold text-slate-400 border-b-2 border-transparent";
             }
         }
@@ -555,7 +512,12 @@
             btn.disabled = true;
             btn.textContent = "등록 중...";
             
-            const { error } = await supabaseClient.from('leaderboard').insert([{ department: dept, avg_speed: window.lastAvg }]);
+            const { error } = await supabaseClient.from('leaderboard').insert([{ 
+                department: dept, 
+                avg_speed: window.lastAvg,
+                device_type: deviceType 
+            }]);
+
             if (error) {
                 alert("기록 등록에 실패했습니다.");
                 btn.disabled = false;
