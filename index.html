@@ -28,7 +28,6 @@
         .font-digital { font-family: 'Roboto Mono', monospace; }
         .text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
         
-        /* 모바일 팝업 스타일 */
         .mobile-modal {
             background-color: white;
             border-radius: 20px;
@@ -38,7 +37,6 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
 
-        /* PC 버전 윈도우 스타일 */
         .pc-modal {
             background-color: white;
             border: 1px solid #ccc;
@@ -52,7 +50,6 @@
         #department-select { max-height: 200px; overflow-y: auto; }
         #captcha-canvas { background-color: #eee; border: 1px solid #999; }
 
-        /* 학부 헤더(optgroup)와 학과(option) 구분 스타일링 */
         #department-select optgroup {
             background-color: #f3f4f6;
             color: #374151;
@@ -67,10 +64,11 @@
             padding: 4px;
         }
         
-        /* 커스텀 스크롤바 */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 10px; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -124,72 +122,37 @@
                 <div id="wrong-attempts-display" class="text-red-500 font-bold text-lg text-shadow"></div>
             </div>
 
-            <!-- PC 버전 레이아웃 -->
             <div id="pc-practice-layout" class="hidden w-full flex flex-col items-center">
                 <div id="countdown-display-pc" class="font-digital text-6xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center"></div>
-                
                 <div id="pc-modal" class="pc-modal hidden mx-auto">
                     <h2 class="text-xl font-bold border-b pb-2 mb-4 text-gray-800">수강신청 매크로 방지</h2>
                     <div class="flex flex-col md:flex-row gap-6">
-                        <div class="flex-shrink-0">
-                            <canvas id="captcha-canvas" width="250" height="250"></canvas>
-                        </div>
+                        <div class="flex-shrink-0"><canvas id="captcha-canvas" width="250" height="250"></canvas></div>
                         <div class="text-sm text-gray-800 space-y-4">
-                            <div>
-                                <p class="font-bold">1. 이미지에 보이는 숫자 4글자를 입력하고 "확인" 버튼을 클릭하세요.</p>
-                                <p class="text-xs text-gray-500 ml-4 italic">Enter the four-digits number(string) that appears in the image and click the "Confirm" button.</p>
-                            </div>
-                            <div>
-                                <p class="font-bold">2. 오류 누적 횟수가 10회가 되면 자동 로그아웃 됩니다.</p>
-                                <p class="text-xs text-gray-600 ml-4">(문자열 오류 총 10회 중 <span id="pc-remain-count">10</span>회 남음)</p>
-                                <p class="text-xs text-gray-500 ml-4 italic">If the string is still incorrect more than 10 times, you will be log out automatically.<br>(Total : 10 Remain : <span id="pc-remain-count-en">10</span>)</p>
-                            </div>
-                            <div>
-                                <p class="font-bold">3. 입력한 문자열이 맞을 경우 이전 요청이 자동 수행됩니다.</p>
-                            </div>
-                            
+                            <div><p class="font-bold">1. 이미지에 보이는 숫자 4글자를 입력하고 "확인" 버튼을 클릭하세요.</p></div>
+                            <div><p class="font-bold">2. 오류 누적 횟수가 10회가 되면 자동 로그아웃 됩니다.</p><p class="text-xs text-gray-600 ml-4">(문자열 오류 총 10회 중 <span id="pc-remain-count">10</span>회 남음)</p></div>
                             <div class="pt-4 flex items-center space-x-2 border-t mt-4">
                                 <span class="font-bold text-gray-700">※ 문자열 입력 :</span>
                                 <input type="text" id="input-field-pc" class="border border-gray-400 px-2 py-1 w-24 text-center text-lg focus:outline-none focus:border-blue-500" maxlength="4">
-                                <button id="submit-button-pc" class="bg-blue-100 border border-blue-300 px-3 py-1 text-sm text-blue-800 hover:bg-blue-200">확인(Confirm)</button>
+                                <button id="submit-button-pc" class="bg-blue-100 border border-blue-300 px-3 py-1 text-sm text-blue-800 hover:bg-blue-200">확인</button>
                             </div>
                         </div>
-                    </div>
-                    <div class="mt-6 flex justify-end">
-                        <button onclick="location.reload()" class="bg-blue-500 text-white px-4 py-1 rounded text-sm hover:bg-blue-600 shadow-sm">닫기</button>
                     </div>
                 </div>
             </div>
 
-            <!-- 모바일 버전 레이아웃 -->
             <div id="mobile-practice-layout" class="hidden flex flex-col items-center justify-center">
                 <div id="countdown-display-mobile" class="font-digital text-6xl font-black text-white text-shadow my-4 h-16 flex items-center justify-center"></div>
-                
                 <div id="mobile-popup" class="mobile-modal transition-opacity duration-200 opacity-0 pointer-events-none mx-auto">
-                    <div class="flex items-center justify-center space-x-1 mb-2">
-                        <span class="text-red-500 text-xl">🚫</span>
-                        <h2 class="text-lg font-bold text-black">수강신청 매크로 방지</h2>
-                    </div>
-                    <div class="text-left text-xs text-gray-700 space-y-1 mb-4">
-                        <p>1. 아래 이미지에 보이는 숫자 4글자를 입력하고 "확인" 버튼을 클릭하세요.</p>
-                        <p>2. 오류 누적 횟수가 10회가 되면 자동 로그아웃됩니다.</p>
-                    </div>
-                    
-                    <div id="mobile-number-display" class="text-4xl font-bold text-red-500 mb-4 h-12 flex items-center justify-center tracking-widest">
-                        ####
-                    </div>
-
-                    <div class="px-4 mb-6">
-                        <input type="text" id="input-field-mobile" class="w-full text-center text-2xl py-2 px-1 border-2 border-gray-200 rounded-full focus:outline-none focus:border-blue-400" placeholder="" maxlength="4">
-                    </div>
-
+                    <div class="flex items-center justify-center mb-2"><h2 class="text-lg font-bold text-black">수강신청 매크로 방지</h2></div>
+                    <div id="mobile-number-display" class="text-4xl font-bold text-red-500 mb-4 h-12 flex items-center justify-center tracking-widest">####</div>
+                    <div class="px-4 mb-6"><input type="text" id="input-field-mobile" class="w-full text-center text-2xl py-2 px-1 border-2 border-gray-200 rounded-full focus:outline-none focus:border-blue-400" maxlength="4"></div>
                     <div class="flex border-t border-gray-100">
                         <button id="submit-button-mobile" class="flex-1 py-3 text-blue-500 font-bold text-lg active:bg-gray-50 border-r border-gray-100">확인</button>
                         <button onclick="location.reload()" class="flex-1 py-3 text-blue-500 text-lg active:bg-gray-50">닫기</button>
                     </div>
                 </div>
             </div>
-            
             <div id="feedback-display" class="mt-4 h-6 text-xl font-bold text-shadow"></div>
         </div>
 
@@ -291,29 +254,43 @@
         </div>
 
         <!-- 랭킹 화면 -->
-        <div id="leaderboard-screen" class="hidden p-6 max-w-md mx-auto">
+        <div id="leaderboard-screen" class="hidden p-6 max-w-lg mx-auto">
             <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-4">실시간 랭킹</h1>
-            <div class="flex justify-center mb-4 border-b border-slate-600">
-                <button id="today-ranking-tab" class="flex-1 pb-2 font-black text-amber-400 border-b-2 border-amber-400">오늘의 기록</button>
-                <button id="hof-tab" class="flex-1 pb-2 font-bold text-slate-400 border-b-2 border-transparent">명예의 전당</button>
+            <div class="flex justify-center mb-4 border-b border-slate-600 overflow-x-auto whitespace-nowrap scrollbar-hide">
+                <button id="today-ranking-tab" class="flex-1 px-3 pb-2 font-black text-amber-400 border-b-2 border-amber-400 text-sm sm:text-base transition-all">오늘의 기록</button>
+                <button id="hof-tab" class="flex-1 px-3 pb-2 font-bold text-slate-400 border-b-2 border-transparent text-sm sm:text-base transition-all">명예의 전당</button>
+                <button id="dept-records-tab" class="flex-1 px-3 pb-2 font-bold text-slate-400 border-b-2 border-transparent text-sm sm:text-base transition-all">학과별 순위</button>
             </div>
             
-            <div id="today-ranking-view" class="space-y-4 max-h-80 overflow-y-auto">
+            <!-- 오늘의 기록 뷰 (중복 제거 상위 3) -->
+            <div id="today-ranking-view" class="space-y-4 max-h-96 overflow-y-auto pr-1">
                 <div>
-                    <h3 class="text-black text-left text-sm font-black mb-2 ml-1">🖥 오늘의 순위 (PC)</h3>
+                    <h3 class="text-black text-left text-sm font-black mb-2 ml-1 flex items-center">
+                        <span class="mr-2">🖥</span> 오늘의 순위 (PC) Top 3
+                    </h3>
                     <div id="today-pc-list" class="space-y-1"></div>
                 </div>
                 <div>
-                    <h3 class="text-black text-left text-sm font-black mb-2 ml-1">📱 오늘의 순위 (모바일)</h3>
+                    <h3 class="text-black text-left text-sm font-black mb-2 ml-1 flex items-center">
+                        <span class="mr-2">📱</span> 오늘의 순위 (모바일) Top 3
+                    </h3>
                     <div id="today-mobile-list" class="space-y-1"></div>
                 </div>
             </div>
 
-            <div id="hof-view" class="hidden space-y-2 max-h-80 overflow-y-auto pt-2">
-                <h3 class="text-black text-left text-sm font-black mb-2 ml-1">🏆 역대 최고 기록 (Top 3)</h3>
+            <!-- 명예의 전당 뷰 -->
+            <div id="hof-view" class="hidden space-y-2 max-h-96 overflow-y-auto pt-2 pr-1">
+                <h3 class="text-black text-left text-sm font-black mb-2 ml-1">🏆 역대 최고 기록 Top 10</h3>
                 <div id="hof-list" class="space-y-1"></div>
             </div>
 
+            <!-- 학과별 순위 뷰 -->
+            <div id="dept-records-view" class="hidden space-y-4 max-h-96 overflow-y-auto pt-2 pr-1">
+                <h3 class="text-black text-left text-sm font-black mb-2 ml-1">🏫 학과별 베스트 Top 3</h3>
+                <div id="dept-records-list" class="space-y-4"></div>
+            </div>
+
+            <!-- 하단 정보 영역 -->
             <div class="mt-6 pt-4 border-t border-white/20">
                 <div id="my-best-display" class="bg-amber-500/20 py-3 px-4 rounded-xl mb-4">
                     <p class="text-white text-xs opacity-70 mb-1">나의 최고 기록</p>
@@ -359,38 +336,28 @@
 
         async function initStats() {
             try {
-                // 1. 새로운 방문 기록 추가
                 await supabaseClient.from('visitors').insert([{}]);
-                
-                // 2. 전체 방문자 수 집계 (1,000개 제한 없음)
+                // count: 'exact'를 사용하여 1000명 이상도 집계 가능하게 수정
                 const { count: totalCount, error: vError } = await supabaseClient
                     .from('visitors')
                     .select('*', { count: 'exact', head: true });
                 
-                if (!vError) {
-                    document.getElementById('visitor-count').textContent = totalCount;
-                }
+                if (!vError) { document.getElementById('visitor-count').textContent = totalCount; }
                 
-                // 3. 오늘 방문자 수 집계 (서버측 필터링 활용)
                 const todayStr = new Date().toISOString().split('T')[0];
                 const { count: todayCount, error: vtError } = await supabaseClient
                     .from('visitors')
                     .select('*', { count: 'exact', head: true })
                     .gte('created_at', todayStr);
                 
-                if (!vtError) {
-                    document.getElementById('today-visitor-count').textContent = todayCount;
-                }
+                if (!vtError) { document.getElementById('today-visitor-count').textContent = todayCount; }
                 
-                // 4. 전체 평균 속도 가져오기
                 const { data: lbData } = await supabaseClient.from('leaderboard').select('avg_speed');
                 if (lbData?.length) {
                     const avg = lbData.reduce((s, r) => s + r.avg_speed, 0) / lbData.length;
                     document.getElementById('average-speed').textContent = avg.toFixed(4);
                 }
-            } catch (e) { 
-                console.error("통계 초기화 오류:", e); 
-            }
+            } catch (e) { console.error("통계 초기화 오류:", e); }
         }
 
         function startGame(mode, type) {
@@ -398,68 +365,40 @@
             currentRound = 0; timeRecords = []; wrongAnswers = 0; isFirstRound = true;
             startScreen.classList.add('hidden');
             practiceScreen.classList.remove('hidden');
-            
-            if (type === 'pc') {
-                pcLayout.classList.remove('hidden');
-                mobileLayout.classList.add('hidden');
-            } else {
-                mobileLayout.classList.remove('hidden');
-                pcLayout.classList.add('hidden');
-            }
+            if (type === 'pc') { pcLayout.classList.remove('hidden'); mobileLayout.classList.add('hidden'); }
+            else { mobileLayout.classList.remove('hidden'); pcLayout.classList.add('hidden'); }
             startNewRound();
         }
 
         function startNewRound() {
-            if (gameMode === '10rounds' && currentRound >= roundLimit) {
-                showResults(); return;
-            }
+            if (gameMode === '10rounds' && currentRound >= roundLimit) { showResults(); return; }
             currentRound++;
             roundCounter.textContent = gameMode === '10rounds' ? `${currentRound} / ${roundLimit}` : `라운드 ${currentRound}`;
             feedbackDisplay.textContent = '';
-            
             const currentInput = (deviceType === 'pc') ? inputPC : inputMobile;
             const currentCD = (deviceType === 'pc') ? document.getElementById('countdown-display-pc') : document.getElementById('countdown-display-mobile');
-            
-            currentInput.value = ''; 
-            currentInput.disabled = true;
-            
-            if (deviceType === 'pc') {
-                pcModal.classList.add('hidden');
-            } else {
-                mobilePopup.classList.add('opacity-0', 'pointer-events-none');
-            }
-
+            currentInput.value = ''; currentInput.disabled = true;
+            if (deviceType === 'pc') { pcModal.classList.add('hidden'); }
+            else { mobilePopup.classList.add('opacity-0', 'pointer-events-none'); }
             currentCD.classList.remove('hidden');
             let count = isFirstRound ? 3 : 1;
             currentCD.textContent = count;
-            
             const timer = setInterval(() => {
                 count--;
                 if (count <= 0) {
                     clearInterval(timer);
                     currentNumber = String(Math.floor(Math.random() * 9000) + 1000);
                     currentCD.classList.add('hidden');
-
-                    if (deviceType === 'pc') {
-                        pcModal.classList.remove('hidden');
-                        drawCaptcha(currentNumber);
-                        inputPC.disabled = false; inputPC.focus();
-                    } else {
-                        mobileNumDisplay.textContent = currentNumber;
-                        mobilePopup.classList.remove('opacity-0', 'pointer-events-none');
-                        inputMobile.disabled = false; inputMobile.focus();
-                    }
+                    if (deviceType === 'pc') { pcModal.classList.remove('hidden'); drawCaptcha(currentNumber); inputPC.disabled = false; inputPC.focus(); }
+                    else { mobileNumDisplay.textContent = currentNumber; mobilePopup.classList.remove('opacity-0', 'pointer-events-none'); inputMobile.disabled = false; inputMobile.focus(); }
                     timerStart = Date.now(); isFirstRound = false;
-                } else {
-                    currentCD.textContent = count;
-                }
+                } else { currentCD.textContent = count; }
             }, 1000);
         }
 
         function checkAnswer() {
             const val = (deviceType === 'pc') ? inputPC.value : inputMobile.value;
             const targetInput = (deviceType === 'pc') ? inputPC : inputMobile;
-
             if (val === currentNumber) {
                 const diff = (Date.now() - timerStart) / 1000;
                 if (gameMode === '10rounds') timeRecords.push(diff);
@@ -473,7 +412,6 @@
                 if (deviceType === 'pc') {
                     const remain = Math.max(0, 10 - wrongAnswers);
                     document.getElementById('pc-remain-count').textContent = remain;
-                    document.getElementById('pc-remain-count-en').textContent = remain;
                 }
                 feedbackDisplay.textContent = '다시 입력하세요!';
                 feedbackDisplay.style.color = '#EF4444';
@@ -484,27 +422,15 @@
         function drawCaptcha(text) {
             const canvas = document.getElementById('captcha-canvas');
             const ctx = canvas.getContext('2d');
-            const width = canvas.width;
-            const height = canvas.height;
-            ctx.clearRect(0,0,width,height); 
-            ctx.fillStyle='#eee'; ctx.fillRect(0,0,width,height);
+            const width = canvas.width; const height = canvas.height;
+            ctx.clearRect(0,0,width,height); ctx.fillStyle='#eee'; ctx.fillRect(0,0,width,height);
             ctx.lineWidth = 1.5;
             for (let i = 0; i < 40; i++) {
-                const r = Math.floor(Math.random() * 255);
-                const g = Math.floor(Math.random() * 255);
-                const b = Math.floor(Math.random() * 255);
+                const r = Math.floor(Math.random() * 255); const g = Math.floor(Math.random() * 255); const b = Math.floor(Math.random() * 255);
                 ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${Math.random() * 0.4 + 0.3})`;
-                ctx.beginPath();
-                ctx.moveTo(Math.random() * width, Math.random() * height);
+                ctx.beginPath(); ctx.moveTo(Math.random() * width, Math.random() * height);
                 ctx.bezierCurveTo(Math.random() * width, Math.random() * height, Math.random() * width, Math.random() * height, Math.random() * width, Math.random() * height);
                 ctx.stroke();
-            }
-            for (let i = 0; i < 200; i++) {
-                const r = Math.floor(Math.random() * 200);
-                const g = Math.floor(Math.random() * 200);
-                const b = Math.floor(Math.random() * 200);
-                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.3)`;
-                ctx.fillRect(Math.random() * width, Math.random() * height, 2, 2);
             }
             ctx.font='bold 60px "Noto Sans KR"'; ctx.textBaseline='middle';
             const startX = (width - (text.length * 45)) / 2;
@@ -522,11 +448,9 @@
             const avg = timeRecords.reduce((a,b) => a+b, 0) / timeRecords.length;
             document.getElementById('result-speed-text').textContent = `평균 기록: ${avg.toFixed(4)}초`;
             window.lastAvg = avg;
-            
             const pb = JSON.parse(localStorage.getItem('personalBests')) || [];
             pb.push({ speed: avg, date: new Date().toISOString(), type: deviceType });
             localStorage.setItem('personalBests', JSON.stringify(pb));
-            
             departmentScreen.classList.remove('hidden');
         }
 
@@ -545,21 +469,38 @@
             const todayPCList = document.getElementById('today-pc-list');
             const todayMobileList = document.getElementById('today-mobile-list');
             const hofList = document.getElementById('hof-list');
+            const deptRecordsList = document.getElementById('dept-records-list');
 
-            [todayPCList, todayMobileList, hofList].forEach(el => el.innerHTML = `<p class="text-black opacity-40 text-xs py-2 font-bold italic">불러오는 중...</p>`);
+            [todayPCList, todayMobileList, hofList, deptRecordsList].forEach(el => el.innerHTML = `<p class="text-white opacity-40 text-xs py-2 font-bold italic">불러오는 중...</p>`);
             
             const { data, error } = await supabaseClient.from('leaderboard').select('*').order('avg_speed', { ascending: true });
             if (error) {
-                [todayPCList, todayMobileList, hofList].forEach(el => el.innerHTML = `<p class="text-red-500 text-xs py-2 font-bold">데이터 로드 실패</p>`);
+                [todayPCList, todayMobileList, hofList, deptRecordsList].forEach(el => el.innerHTML = `<p class="text-red-500 text-xs py-2 font-bold">데이터 로드 실패</p>`);
                 return;
             }
 
             const todayStr = new Date().toISOString().split('T')[0];
             const todayData = data.filter(r => r.created_at && r.created_at.startsWith(todayStr));
             
-            const pcTop3 = todayData.filter(r => r.device_type === 'pc').slice(0, 3);
-            const mobileTop3 = todayData.filter(r => r.device_type === 'mobile').slice(0, 3);
-            const hofTop3 = data.slice(0, 3);
+            // 학과별 중복 제거 함수
+            const deduplicateByDept = (list) => {
+                const seen = new Set();
+                return list.filter(item => {
+                    if (seen.has(item.department)) return false;
+                    seen.add(item.department);
+                    return true;
+                });
+            };
+
+            const pcTodayUnique = deduplicateByDept(todayData.filter(r => r.device_type === 'pc')).slice(0, 3);
+            const mobileTodayUnique = deduplicateByDept(todayData.filter(r => r.device_type === 'mobile')).slice(0, 3);
+            const hofTop10 = data.slice(0, 10);
+
+            const deptGroups = {};
+            data.forEach(r => {
+                if (!deptGroups[r.department]) deptGroups[r.department] = [];
+                deptGroups[r.department].push(r);
+            });
 
             const renderItems = (list, target) => {
                 target.innerHTML = '';
@@ -569,11 +510,11 @@
                 }
                 list.forEach((r, i) => {
                     const div = document.createElement('div');
-                    div.className = "flex justify-between items-center bg-white/90 py-2 px-3 rounded-lg text-black text-sm font-bold shadow-sm";
+                    div.className = "flex justify-between items-center bg-white/95 py-2 px-3 rounded-lg text-black text-sm font-bold shadow-md transform transition-all";
                     div.innerHTML = `
                         <span class="flex items-center">
-                            <span class="w-6 font-black text-blue-600">${i+1}</span>
-                            <span class="truncate max-w-[120px]">${r.department}</span>
+                            <span class="w-6 font-black text-blue-700">${i+1}</span>
+                            <span class="truncate max-w-[140px] sm:max-w-none">${r.department}</span>
                         </span>
                         <span class="font-digital text-red-600 font-black">${r.avg_speed.toFixed(4)}s</span>
                     `;
@@ -581,34 +522,67 @@
                 });
             };
 
-            renderItems(pcTop3, todayPCList);
-            renderItems(mobileTop3, todayMobileList);
-            renderItems(hofTop3, hofList);
+            const renderDeptRecords = (groups, target) => {
+                target.innerHTML = '';
+                const sortedDeptNames = Object.keys(groups).sort();
+                if (!sortedDeptNames.length) {
+                    target.innerHTML = `<p class="text-black opacity-40 text-xs py-2 font-bold italic">기록이 없습니다.</p>`;
+                    return;
+                }
+
+                sortedDeptNames.forEach(deptName => {
+                    const records = groups[deptName].sort((a,b) => a.avg_speed - b.avg_speed).slice(0, 3);
+                    const groupDiv = document.createElement('div');
+                    groupDiv.className = "bg-black/20 p-3 rounded-xl border border-white/10";
+                    let html = `<h4 class="text-amber-400 font-black text-sm mb-2 px-1">🏢 ${deptName}</h4><div class="space-y-1">`;
+                    records.forEach((r, idx) => {
+                        html += `
+                            <div class="flex justify-between items-center bg-white/10 py-1.5 px-3 rounded-md text-white text-xs font-bold">
+                                <span class="flex items-center">
+                                    <span class="w-4 opacity-70">${idx+1}</span>
+                                    <span class="opacity-60 text-[10px] mr-2">${r.device_type === 'pc' ? '🖥' : '📱'}</span>
+                                    <span>${r.created_at.split('T')[0].replace(/-/g, '.')}</span>
+                                </span>
+                                <span class="font-digital text-amber-300 font-bold">${r.avg_speed.toFixed(4)}s</span>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                    groupDiv.innerHTML = html;
+                    target.appendChild(groupDiv);
+                });
+            };
+
+            renderItems(pcTodayUnique, todayPCList);
+            renderItems(mobileTodayUnique, todayMobileList);
+            renderItems(hofTop10, hofList);
+            renderDeptRecords(deptGroups, deptRecordsList);
         }
 
         function setActiveTab(tab) {
-            const todayBtn = document.getElementById('today-ranking-tab');
-            const hofBtn = document.getElementById('hof-tab');
-            const todayView = document.getElementById('today-ranking-view');
-            const hofView = document.getElementById('hof-view');
-            
-            if (tab === 'today') {
-                todayView.classList.remove('hidden'); hofView.classList.add('hidden');
-                todayBtn.className = "flex-1 pb-2 font-black text-amber-400 border-b-2 border-amber-400";
-                hofBtn.className = "flex-1 pb-2 font-bold text-slate-400 border-b-2 border-transparent";
-            } else {
-                hofView.classList.remove('hidden'); todayView.classList.add('hidden');
-                hofBtn.className = "flex-1 pb-2 font-black text-amber-400 border-b-2 border-amber-400";
-                todayBtn.className = "flex-1 pb-2 font-bold text-slate-400 border-b-2 border-transparent";
-            }
+            const tabs = {
+                today: { btn: 'today-ranking-tab', view: 'today-ranking-view' },
+                hof: { btn: 'hof-tab', view: 'hof-view' },
+                dept: { btn: 'dept-records-tab', view: 'dept-records-view' }
+            };
+            Object.keys(tabs).forEach(k => {
+                const isMatch = (k === tab);
+                const btn = document.getElementById(tabs[k].btn);
+                const view = document.getElementById(tabs[k].view);
+                if (isMatch) { 
+                    btn.className = "flex-1 px-3 pb-2 font-black text-amber-400 border-b-2 border-amber-400 text-sm sm:text-base transition-all"; 
+                    view.classList.remove('hidden'); 
+                } else { 
+                    btn.className = "flex-1 px-3 pb-2 font-bold text-slate-400 border-b-2 border-transparent text-sm sm:text-base transition-all"; 
+                    view.classList.add('hidden'); 
+                }
+            });
         }
 
         document.addEventListener('DOMContentLoaded', initStats);
         document.getElementById('practice-home-button').onclick = () => location.reload();
-        
         const handleEnter = (e) => { if(e.key === 'Enter') checkAnswer(); };
-        inputPC.onkeydown = handleEnter;
-        inputMobile.onkeydown = handleEnter;
+        inputPC.onkeydown = handleEnter; inputMobile.onkeydown = handleEnter;
         document.getElementById('submit-button-pc').onclick = checkAnswer;
         document.getElementById('submit-button-mobile').onclick = checkAnswer;
 
@@ -616,28 +590,14 @@
             const dept = document.getElementById('department-select').value;
             if(!dept) return;
             const btn = document.getElementById('submit-score-button');
-            btn.disabled = true;
-            btn.textContent = "등록 중...";
-            
+            btn.disabled = true; btn.textContent = "등록 중...";
             try {
                 const { error } = await supabaseClient.from('leaderboard').insert([{ 
-                    department: dept, 
-                    avg_speed: window.lastAvg,
-                    device_type: deviceType 
+                    department: dept, avg_speed: window.lastAvg, device_type: deviceType 
                 }]);
-
-                if (error) {
-                    console.error("기록 등록 오류:", error);
-                    alert(`기록 등록에 실패했습니다.`);
-                    btn.disabled = false;
-                    btn.textContent = "기록 제출 및 랭킹 보기";
-                } else {
-                    fetchAndShowLeaderboard();
-                }
-            } catch (err) {
-                btn.disabled = false;
-                btn.textContent = "기록 제출 및 랭킹 보기";
-            }
+                if (error) { alert("기록 등록에 실패했습니다."); btn.disabled = false; btn.textContent = "기록 제출 및 랭킹 보기"; }
+                else { fetchAndShowLeaderboard(); }
+            } catch (err) { btn.disabled = false; btn.textContent = "기록 제출 및 랭킹 보기"; }
         };
 
         document.getElementById('department-select').onchange = (e) => {
@@ -649,16 +609,11 @@
             const select = document.getElementById('department-select');
             const groups = select.querySelectorAll('optgroup');
             const options = select.querySelectorAll('option');
-
             options.forEach(opt => {
-                if (opt.value === "") {
-                    opt.style.display = term === "" ? "" : "none";
-                    return;
-                }
+                if (opt.value === "") { opt.style.display = term === "" ? "" : "none"; return; }
                 const match = opt.textContent.toLowerCase().includes(term);
                 opt.style.display = match ? "" : "none";
             });
-
             groups.forEach(group => {
                 const childOptions = Array.from(group.querySelectorAll('option'));
                 const hasVisibleOption = childOptions.some(opt => opt.style.display !== "none");
@@ -669,18 +624,14 @@
         document.getElementById('view-ranking-button').onclick = fetchAndShowLeaderboard;
         document.getElementById('today-ranking-tab').onclick = () => setActiveTab('today');
         document.getElementById('hof-tab').onclick = () => setActiveTab('hof');
+        document.getElementById('dept-records-tab').onclick = () => setActiveTab('dept');
 
         document.getElementById('view-personal-records-button').onclick = () => {
             startScreen.classList.add('hidden');
             document.getElementById('personal-records-screen').classList.remove('hidden');
             const list = document.getElementById('personal-records-list');
             const pb = JSON.parse(localStorage.getItem('personalBests')) || [];
-            
-            if (!pb.length) {
-                list.innerHTML = `<p class="text-white text-center opacity-60">기록이 없습니다.</p>`;
-                return;
-            }
-            
+            if (!pb.length) { list.innerHTML = `<p class="text-white text-center opacity-60">기록이 없습니다.</p>`; return; }
             list.innerHTML = pb.sort((a,b) => a.speed - b.speed).map(r => `
                 <div class="bg-black/30 py-2 px-3 rounded-lg text-white flex justify-between items-center text-sm mb-1">
                     <div class="flex flex-col">
