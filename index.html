@@ -54,14 +54,14 @@
 
         /* 학부 헤더(optgroup)와 학과(option) 구분 스타일링 */
         #department-select optgroup {
-            background-color: #f3f4f6; /* 연한 회색 (gray-100) */
-            color: #374151; /* 어두운 회색 (gray-700) */
+            background-color: #f3f4f6;
+            color: #374151;
             font-weight: 900;
             font-style: normal;
             padding: 4px 0;
         }
         #department-select option {
-            background-color: #ffffff; /* 실제 항목은 흰색 배경 */
+            background-color: #ffffff;
             color: #000000;
             font-weight: 400;
             padding: 4px;
@@ -298,7 +298,6 @@
                 <button id="hof-tab" class="flex-1 pb-2 font-bold text-slate-400 border-b-2 border-transparent">명예의 전당</button>
             </div>
             
-            <!-- 오늘의 랭킹 뷰 (기기별 분리) -->
             <div id="today-ranking-view" class="space-y-4 max-h-80 overflow-y-auto">
                 <div>
                     <h3 class="text-black text-left text-sm font-black mb-2 ml-1">🖥 오늘의 순위 (PC)</h3>
@@ -310,13 +309,11 @@
                 </div>
             </div>
 
-            <!-- 명예의 전당 뷰 -->
             <div id="hof-view" class="hidden space-y-2 max-h-80 overflow-y-auto pt-2">
                 <h3 class="text-black text-left text-sm font-black mb-2 ml-1">🏆 역대 최고 기록 (Top 3)</h3>
                 <div id="hof-list" class="space-y-1"></div>
             </div>
 
-            <!-- 하단 정보 영역 -->
             <div class="mt-6 pt-4 border-t border-white/20">
                 <div id="my-best-display" class="bg-amber-500/20 py-3 px-4 rounded-xl mb-4">
                     <p class="text-white text-xs opacity-70 mb-1">나의 최고 기록</p>
@@ -365,19 +362,27 @@
                 // 1. 새로운 방문 기록 추가
                 await supabaseClient.from('visitors').insert([{}]);
                 
-                // 2. 전체 방문자 및 오늘 방문자 데이터 가져오기
-                const { data: visitorsData, error: vError } = await supabaseClient.from('visitors').select('created_at');
-                if (visitorsData) {
-                    // 전체 방문자
-                    document.getElementById('visitor-count').textContent = visitorsData.length;
-                    
-                    // 오늘 방문자 필터링
-                    const todayStr = new Date().toISOString().split('T')[0];
-                    const todayCount = visitorsData.filter(v => v.created_at && v.created_at.startsWith(todayStr)).length;
+                // 2. 전체 방문자 수 집계 (1,000개 제한 없음)
+                const { count: totalCount, error: vError } = await supabaseClient
+                    .from('visitors')
+                    .select('*', { count: 'exact', head: true });
+                
+                if (!vError) {
+                    document.getElementById('visitor-count').textContent = totalCount;
+                }
+                
+                // 3. 오늘 방문자 수 집계 (서버측 필터링 활용)
+                const todayStr = new Date().toISOString().split('T')[0];
+                const { count: todayCount, error: vtError } = await supabaseClient
+                    .from('visitors')
+                    .select('*', { count: 'exact', head: true })
+                    .gte('created_at', todayStr);
+                
+                if (!vtError) {
                     document.getElementById('today-visitor-count').textContent = todayCount;
                 }
                 
-                // 3. 전체 평균 속도 가져오기
+                // 4. 전체 평균 속도 가져오기
                 const { data: lbData } = await supabaseClient.from('leaderboard').select('avg_speed');
                 if (lbData?.length) {
                     const avg = lbData.reduce((s, r) => s + r.avg_speed, 0) / lbData.length;
@@ -623,15 +628,13 @@
 
                 if (error) {
                     console.error("기록 등록 오류:", error);
-                    alert(`기록 등록에 실패했습니다.\n사유: ${error.message || '알 수 없는 오류'}`);
+                    alert(`기록 등록에 실패했습니다.`);
                     btn.disabled = false;
                     btn.textContent = "기록 제출 및 랭킹 보기";
                 } else {
                     fetchAndShowLeaderboard();
                 }
             } catch (err) {
-                console.error("제출 프로세스 예외:", err);
-                alert("네트워크 연결을 확인해주세요.");
                 btn.disabled = false;
                 btn.textContent = "기록 제출 및 랭킹 보기";
             }
@@ -691,4 +694,3 @@
     </script>
 </body>
 </html>
-
