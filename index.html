@@ -91,22 +91,22 @@
                 <div class="space-y-2">
                     <p class="text-white font-black text-lg text-left ml-1 text-shadow">⏱ 10개 모드 (기록 등록 가능)</p>
                     <div class="flex space-x-2">
-                        <button onclick="startGame('10rounds', 'pc')" class="flex-1 bg-[#0F4C9C] text-white font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90">PC 버전</button>
-                        <button onclick="startGame('10rounds', 'mobile')" class="flex-1 bg-[#4A90E2] text-white font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90">모바일 버전</button>
+                        <button onclick="startGame('10rounds', 'pc')" class="flex-1 bg-[#0F4C9C] text-white font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90 transition-transform active:scale-95">PC 버전</button>
+                        <button onclick="startGame('10rounds', 'mobile')" class="flex-1 bg-[#4A90E2] text-white font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90 transition-transform active:scale-95">모바일 버전</button>
                     </div>
                 </div>
 
                 <div class="space-y-2">
                     <p class="text-white font-black text-lg text-left ml-1 text-shadow">♾ 무한 모드</p>
                     <div class="flex space-x-2">
-                        <button onclick="startGame('infinite', 'pc')" class="flex-1 bg-[#EA3C57] text-white font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90">PC 버전</button>
-                        <button onclick="startGame('infinite', 'mobile')" class="flex-1 bg-[#FF6B6B] text-white font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90">모바일 버전</button>
+                        <button onclick="startGame('infinite', 'pc')" class="flex-1 bg-[#EA3C57] text-white font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90 transition-transform active:scale-95">PC 버전</button>
+                        <button onclick="startGame('infinite', 'mobile')" class="flex-1 bg-[#FF6B6B] text-white font-bold py-3 px-2 rounded-lg shadow-lg hover:opacity-90 transition-transform active:scale-95">모바일 버전</button>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">
-                    <button id="view-ranking-button" class="bg-[#F8C66D] text-slate-800 font-bold py-3 px-4 rounded-lg shadow-lg hover:opacity-90">랭킹 보기</button>
-                    <button id="view-personal-records-button" class="bg-[#C7C1B5] text-slate-800 font-bold py-3 px-4 rounded-lg shadow-lg hover:opacity-90">기록 보기</button>
+                    <button id="view-ranking-button" class="bg-[#F8C66D] text-slate-800 font-bold py-3 px-4 rounded-lg shadow-lg hover:opacity-90 transition-transform active:scale-95">랭킹 보기</button>
+                    <button id="view-personal-records-button" class="bg-[#C7C1B5] text-slate-800 font-bold py-3 px-4 rounded-lg shadow-lg hover:opacity-90 transition-transform active:scale-95">기록 보기</button>
                 </div>
             </div>
 
@@ -122,17 +122,17 @@
         <!-- 연습 화면 -->
         <div id="practice-screen" class="hidden flex flex-col items-center justify-center w-full">
             <div class="w-full flex justify-between items-center mb-4 px-4 max-w-4xl">
-                <button id="practice-home-button" class="text-white bg-slate-600/50 hover:bg-slate-700/70 rounded-full p-2">
+                <button id="practice-home-button" class="text-white bg-slate-600/50 hover:bg-slate-700/70 rounded-full p-2 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                 </button>
                 <div id="round-counter" class="text-white text-shadow font-bold text-lg h-6"></div>
                 <div id="wrong-attempts-display" class="text-red-500 font-bold text-lg text-shadow"></div>
             </div>
 
-            <!-- PC 버전 레이아웃 -->
+            <!-- PC 레이아웃 -->
             <div id="pc-practice-layout" class="hidden w-full flex flex-col items-center">
                 <div id="countdown-display-pc" class="font-digital text-6xl font-black text-white text-shadow my-4 h-24 flex items-center justify-center"></div>
-                <div id="pc-modal" class="pc-modal hidden mx-auto">
+                <div id="pc-modal" class="pc-modal hidden mx-auto rounded-lg">
                     <h2 class="text-xl font-bold border-b pb-2 mb-4 text-gray-800">수강신청 매크로 방지</h2>
                     <div class="flex flex-col md:flex-row gap-6">
                         <div class="flex-shrink-0"><canvas id="captcha-canvas" width="250" height="250"></canvas></div>
@@ -142,14 +142,14 @@
                             <div class="pt-4 flex items-center space-x-2 border-t mt-4">
                                 <span class="font-bold text-gray-700">※ 문자열 입력 :</span>
                                 <input type="text" id="input-field-pc" class="border border-gray-400 px-2 py-1 w-24 text-center text-lg focus:outline-none focus:border-blue-500" maxlength="4">
-                                <button id="submit-button-pc" class="bg-blue-100 border border-blue-300 px-3 py-1 text-sm text-blue-800 hover:bg-blue-200 font-bold">확인</button>
+                                <button id="submit-button-pc" class="bg-blue-100 border border-blue-300 px-3 py-1 text-sm text-blue-800 hover:bg-blue-200 font-bold transition-colors">확인</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 모바일 버전 레이아웃 -->
+            <!-- 모바일 레이아웃 -->
             <div id="mobile-practice-layout" class="hidden flex flex-col items-center justify-center">
                 <div id="countdown-display-mobile" class="font-digital text-6xl font-black text-white text-shadow my-4 h-16 flex items-center justify-center"></div>
                 <div id="mobile-popup" class="mobile-modal transition-opacity duration-200 opacity-0 pointer-events-none mx-auto">
@@ -157,8 +157,8 @@
                     <div id="mobile-number-display" class="text-4xl font-bold text-red-500 mb-4 h-12 flex items-center justify-center tracking-widest">####</div>
                     <div class="px-4 mb-6"><input type="text" id="input-field-mobile" class="w-full text-center text-2xl py-2 px-1 border-2 border-gray-200 rounded-full focus:outline-none focus:border-blue-400" maxlength="4"></div>
                     <div class="flex border-t border-gray-100">
-                        <button id="submit-button-mobile" class="flex-1 py-3 text-blue-500 font-bold text-lg active:bg-gray-50 border-r border-gray-100">확인</button>
-                        <button onclick="location.reload()" class="flex-1 py-3 text-blue-500 text-lg active:bg-gray-50">닫기</button>
+                        <button id="submit-button-mobile" class="flex-1 py-3 text-blue-500 font-bold text-lg active:bg-gray-50 border-r border-gray-100 transition-colors">확인</button>
+                        <button onclick="location.reload()" class="flex-1 py-3 text-blue-500 text-lg active:bg-gray-50 transition-colors">닫기</button>
                     </div>
                 </div>
             </div>
@@ -259,18 +259,26 @@
                     <option value="법학부">법학부</option>
                  </optgroup>
             </select>
-            <button id="submit-score-button" class="w-full mt-4 bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-green-700 disabled:bg-gray-400" disabled>기록 제출 및 랭킹 보기</button>
+            <button id="submit-score-button" class="w-full mt-4 bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-green-700 disabled:bg-gray-400 transition-colors" disabled>기록 제출 및 랭킹 보기</button>
         </div>
 
         <!-- 랭킹 화면 -->
         <div id="leaderboard-screen" class="hidden p-6 max-w-lg mx-auto">
             <h1 class="text-3xl sm:text-4xl font-bold text-white text-shadow mb-4 text-center">실시간 랭킹</h1>
+            
+            <!-- 컴퓨터공학부 관련 안내 박스 -->
+            <div class="bg-blue-900/50 border border-blue-400/40 p-3 rounded-lg mb-4 text-[11px] text-blue-50 text-shadow text-left leading-relaxed">
+                <p class="font-bold mb-1">📢 랭킹 시스템 업데이트 안내</p>
+                <p>컴퓨터공학부 학생들의 압도적인 실력으로 인해, <span class="text-amber-300 font-bold">오늘의 순위</span>는 다양한 학과가 노출될 수 있도록 <span class="text-amber-300 font-bold">학과별 베스트 1개</span>만 표시되도록 분류되었습니다. 모든 학생들의 순위는 <span class="text-amber-300 font-bold">'학과별 순위'</span> 탭에서 개별적으로 확인하실 수 있습니다.</p>
+            </div>
+
             <div class="flex justify-center mb-4 border-b border-slate-600 overflow-x-auto whitespace-nowrap scrollbar-hide text-shadow">
-                <button id="today-ranking-tab" class="flex-1 px-3 pb-2 font-black text-amber-400 border-b-2 border-amber-400 text-sm sm:text-base">오늘의 기록</button>
-                <button id="hof-tab" class="flex-1 px-3 pb-2 font-bold text-slate-400 border-b-2 border-transparent text-sm sm:text-base transition-all">명예의 전당</button>
-                <button id="dept-records-tab" class="flex-1 px-3 pb-2 font-bold text-slate-400 border-b-2 border-transparent text-sm sm:text-base transition-all">학과별 순위</button>
+                <button id="today-ranking-tab" class="flex-1 px-3 pb-2 font-black text-amber-400 border-b-2 border-amber-400 text-sm sm:text-base transition-colors">오늘의 기록</button>
+                <button id="hof-tab" class="flex-1 px-3 pb-2 font-bold text-slate-400 border-b-2 border-transparent text-sm sm:text-base transition-colors">명예의 전당</button>
+                <button id="dept-records-tab" class="flex-1 px-3 pb-2 font-bold text-slate-400 border-b-2 border-transparent text-sm sm:text-base transition-colors">학과별 순위</button>
             </div>
             
+            <!-- 오늘의 기록 탭 -->
             <div id="today-ranking-view" class="space-y-4 max-h-96 overflow-y-auto pr-1 text-left">
                 <div>
                     <h3 class="text-black font-black text-sm mb-2 ml-1 flex items-center"><span class="mr-2">🖥</span> 오늘의 순위 (PC) Top 3</h3>
@@ -282,11 +290,13 @@
                 </div>
             </div>
 
+            <!-- 명예의 전당 탭 -->
             <div id="hof-view" class="hidden space-y-2 max-h-96 overflow-y-auto pt-2 pr-1 text-left">
                 <h3 class="text-black font-black text-sm mb-2 ml-1">🏆 역대 최고 기록 Top 10</h3>
                 <div id="hof-list" class="space-y-1"></div>
             </div>
 
+            <!-- 학과별 순위 탭 -->
             <div id="dept-records-view" class="hidden space-y-4 max-h-96 overflow-y-auto pt-2 pr-1 text-left">
                 <h3 class="text-black font-black text-sm mb-2 ml-1">🏫 학과별 베스트 Top 3</h3>
                 <div id="dept-records-list" class="space-y-4"></div>
@@ -297,7 +307,7 @@
                     <p class="text-white text-xs opacity-70 mb-1">나의 최고 기록</p>
                     <p id="my-best-value" class="text-amber-400 font-digital text-2xl font-black">--.----s</p>
                 </div>
-                <button onclick="location.reload()" class="w-full bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700">처음으로 돌아가기</button>
+                <button onclick="location.reload()" class="w-full bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700 transition-colors">처음으로 돌아가기</button>
             </div>
         </div>
 
@@ -305,7 +315,7 @@
         <div id="personal-records-screen" class="hidden p-6 max-w-md mx-auto text-left">
             <h1 class="text-3xl sm:text-4xl font-bold text-white text-center text-shadow mb-6">나의 연습 기록</h1>
             <div id="personal-records-list" class="space-y-2 max-h-80 overflow-y-auto"></div>
-            <button onclick="location.reload()" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700 text-center">처음으로 돌아가기</button>
+            <button onclick="location.reload()" class="w-full mt-6 bg-slate-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-slate-700 transition-colors text-center">처음으로 돌아가기</button>
         </div>
     </div>
 
@@ -337,14 +347,13 @@
             try {
                 await supabaseClient.from('visitors').insert([{}]);
                 
-                // 1. 전체 방문자 수 (count: 'exact'로 1000명 이상 처리)
+                // 1. 전체 방문자 수 집계
                 const { count: totalCount, error: vError } = await supabaseClient
                     .from('visitors')
                     .select('*', { count: 'exact', head: true });
                 if (!vError) document.getElementById('visitor-count').textContent = totalCount;
 
-                // 2. 오늘 방문자 수 (한국 시각 KST 기준 필터링)
-                // UTC 기준 시간을 한국 시간(+9시간)으로 보정
+                // 2. 오늘 방문자 수 (KST 한국 시간 기준 필터링)
                 const now = new Date();
                 const kstTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
                 const todayStr = kstTime.toISOString().split('T')[0];
@@ -496,16 +505,9 @@
         }
 
         async function fetchAndShowLeaderboard() {
-            startScreen.classList.add('hidden');
-            departmentScreen.classList.add('hidden');
-            leaderboardScreen.classList.remove('hidden');
-            setActiveTab('today');
-            
+            startScreen.classList.add('hidden'); departmentScreen.classList.add('hidden'); leaderboardScreen.classList.remove('hidden'); setActiveTab('today');
             const pb = JSON.parse(localStorage.getItem('personalBests')) || [];
-            if (pb.length > 0) {
-                const bestValue = Math.min(...pb.map(r => r.speed));
-                document.getElementById('my-best-value').textContent = `${bestValue.toFixed(4)}s`;
-            }
+            if (pb.length > 0) document.getElementById('my-best-value').textContent = `${Math.min(...pb.map(r => r.speed)).toFixed(4)}s`;
             
             const lists = { 
                 pc: document.getElementById('today-pc-list'), 
@@ -514,21 +516,18 @@
                 dept: document.getElementById('dept-records-list') 
             };
             
-            Object.values(lists).forEach(el => el.innerHTML = `<p class="text-white opacity-40 text-xs py-2 font-bold italic">불러오는 중...</p>`);
+            Object.values(lists).forEach(el => el.innerHTML = `<p class="text-white opacity-40 text-xs py-2 font-bold italic text-center">불러오는 중...</p>`);
             
             const { data, error } = await supabaseClient.from('leaderboard').select('*').order('avg_speed', { ascending: true });
             if (error) {
-                Object.values(lists).forEach(el => el.innerHTML = `<p class="text-red-500 text-xs py-2 font-bold">데이터 로드 실패</p>`);
+                Object.values(lists).forEach(el => el.innerHTML = `<p class="text-red-500 text-xs py-2 font-bold text-center">데이터 로드 실패</p>`);
                 return;
             }
 
-            // 오늘 날짜 계산 (한국 시간 KST 기준)
-            const now = new Date();
-            const kstOffset = 9 * 60 * 60 * 1000;
-            const todayStr = new Date(now.getTime() + kstOffset).toISOString().split('T')[0];
+            const kstNow = new Date(new Date().getTime() + (9 * 60 * 60 * 1000));
+            const todayStr = kstNow.toISOString().split('T')[0];
             const todayData = data.filter(r => r.created_at && r.created_at.startsWith(todayStr));
             
-            // 학과별 중복 제거 함수
             const deduplicate = (list) => {
                 const seen = new Set();
                 return list.filter(item => {
@@ -556,20 +555,17 @@
             render(deduplicate(todayData.filter(r => r.device_type === 'mobile')).slice(0, 3), lists.mobile);
             render(data.slice(0, 10), lists.hof);
 
-            // 학과별 순위 (모든 학과 Top 3)
             const dg = {};
             data.forEach(r => { if (!dg[r.department]) dg[r.department] = []; dg[r.department].push(r); });
             lists.dept.innerHTML = '';
             Object.keys(dg).sort().forEach(dn => {
                 const gr = document.createElement('div');
-                gr.className = "bg-black/20 p-3 rounded-xl border border-white/10 mb-2";
+                gr.className = "bg-black/20 p-3 rounded-xl border border-white/10 mb-2 shadow-inner";
                 let h = `<h4 class="text-amber-400 font-black text-sm mb-2 px-1">🏢 ${dn}</h4><div class="space-y-1">`;
                 dg[dn].sort((a,b)=>a.avg_speed-b.avg_speed).slice(0,3).forEach((r, x) => {
-                    h += `<div class="flex justify-between items-center bg-white/10 py-1.5 px-3 rounded-md text-white text-xs font-bold"><span class="flex items-center"><span class="w-4 opacity-70">${x+1}</span><span class="opacity-60 text-[10px] mr-2">${r.device_type==='pc'?'🖥':'📱'}</span><span>${r.created_at.split('T')[0]}</span></span><span class="font-digital text-amber-300 font-bold">${r.avg_speed.toFixed(4)}s</span></div>`;
+                    h += `<div class="flex justify-between items-center bg-white/10 py-1.5 px-3 rounded-md text-white text-xs font-bold"><span class="flex items-center"><span class="w-4 opacity-70">${x+1}</span><span class="opacity-60 text-[10px] mr-2">${r.device_type==='pc'?'🖥':'📱'}</span><span>${r.created_at.split('T')[0].replace(/-/g, '.')}</span></span><span class="font-digital text-amber-300 font-bold">${r.avg_speed.toFixed(4)}s</span></div>`;
                 });
-                h += `</div>`;
-                gr.innerHTML = h;
-                lists.dept.appendChild(gr);
+                h += `</div>`; gr.innerHTML = h; lists.dept.appendChild(gr);
             });
         }
 
@@ -587,70 +583,33 @@
         document.addEventListener('DOMContentLoaded', initStats);
         document.getElementById('practice-home-button').onclick = () => location.reload();
         const he = (e) => { if(e.key === 'Enter') checkAnswer(); };
-        inputPC.onkeydown = he;
-        inputMobile.onkeydown = he;
+        inputPC.onkeydown = he; inputMobile.onkeydown = he;
         document.getElementById('submit-button-pc').onclick = checkAnswer;
         document.getElementById('submit-button-mobile').onclick = checkAnswer;
-
         document.getElementById('submit-score-button').onclick = async () => {
-            const dept = document.getElementById('department-select').value;
-            if(!dept) return;
-            const btn = document.getElementById('submit-score-button');
-            btn.disabled = true;
-            btn.textContent = "등록 중...";
+            const dept = document.getElementById('department-select').value; if(!dept) return;
+            const btn = document.getElementById('submit-score-button'); btn.disabled = true; btn.textContent = "등록 중...";
             try {
-                const { error } = await supabaseClient.from('leaderboard').insert([{ 
-                    department: dept, 
-                    avg_speed: window.lastAvg, 
-                    device_type: deviceType 
-                }]);
+                const { error } = await supabaseClient.from('leaderboard').insert([{ department: dept, avg_speed: window.lastAvg, device_type: deviceType }]);
                 if (error) throw error;
                 fetchAndShowLeaderboard();
-            } catch (err) {
-                btn.disabled = false;
-                btn.textContent = "제출 실패 (재시도)";
-            }
+            } catch (err) { btn.disabled = false; btn.textContent = "제출 실패 (재시도)"; }
         };
-
-        document.getElementById('department-select').onchange = (e) => {
-            document.getElementById('submit-score-button').disabled = !e.target.value;
-        };
-
+        document.getElementById('department-select').onchange = (e) => { document.getElementById('submit-score-button').disabled = !e.target.value; };
         document.getElementById('department-search').oninput = (e) => {
-            const t = e.target.value.toLowerCase();
-            const sel = document.getElementById('department-select');
-            sel.querySelectorAll('option').forEach(o => {
-                if(o.value==="") o.style.display = t===""?"":"none";
-                else o.style.display = o.textContent.toLowerCase().includes(t)?"":"none";
-            });
-            sel.querySelectorAll('optgroup').forEach(g => {
-                g.style.display = Array.from(g.querySelectorAll('option')).some(o => o.style.display!=="none")?"":"none";
-            });
+            const t = e.target.value.toLowerCase(); const sel = document.getElementById('department-select');
+            sel.querySelectorAll('option').forEach(o => { if(o.value==="") o.style.display = t===""?"":"none"; else o.style.display = o.textContent.toLowerCase().includes(t)?"":"none"; });
+            sel.querySelectorAll('optgroup').forEach(g => { g.style.display = Array.from(g.querySelectorAll('option')).some(o => o.style.display!=="none")?"":"none"; });
         };
-
         document.getElementById('view-ranking-button').onclick = fetchAndShowLeaderboard;
         document.getElementById('today-ranking-tab').onclick = () => setActiveTab('today');
         document.getElementById('hof-tab').onclick = () => setActiveTab('hof');
         document.getElementById('dept-records-tab').onclick = () => setActiveTab('dept');
-
         document.getElementById('view-personal-records-button').onclick = () => {
-            startScreen.classList.add('hidden');
-            document.getElementById('personal-records-screen').classList.remove('hidden');
-            const l = document.getElementById('personal-records-list');
-            const pb = JSON.parse(localStorage.getItem('personalBests')) || [];
-            if(!pb.length) {
-                l.innerHTML = `<p class="text-white text-center opacity-60">기록이 없습니다.</p>`;
-                return;
-            }
-            l.innerHTML = pb.sort((a,b)=>a.speed-b.speed).map(r => `
-                <div class="bg-black/30 py-2 px-3 rounded-lg text-white flex justify-between items-center text-sm mb-1">
-                    <div>
-                        <span class="text-[10px] text-gray-400">${new Date(r.date).toLocaleDateString()}</span><br>
-                        <span class="font-bold">${r.type==='pc'?'🖥 PC':'📱 모바일'}</span>
-                    </div>
-                    <span class="font-digital text-amber-400 text-lg font-bold">${r.speed.toFixed(4)}s</span>
-                </div>
-            `).join('');
+            startScreen.classList.add('hidden'); document.getElementById('personal-records-screen').classList.remove('hidden');
+            const l = document.getElementById('personal-records-list'); const pb = JSON.parse(localStorage.getItem('personalBests')) || [];
+            if(!pb.length) { l.innerHTML = `<p class="text-white text-center opacity-60">기록이 없습니다.</p>`; return; }
+            l.innerHTML = pb.sort((a,b)=>a.speed-b.speed).map(r => `<div class="bg-black/30 py-2 px-3 rounded-lg text-white flex justify-between items-center text-sm mb-1"><div><span class="text-[10px] text-gray-400">${new Date(r.date).toLocaleDateString()}</span><br><span class="font-bold">${r.type==='pc'?'🖥 PC':'📱 모바일'}</span></div><span class="font-digital text-amber-400 text-lg font-bold">${r.speed.toFixed(4)}s</span></div>`).join('');
         };
     </script>
 </body>
